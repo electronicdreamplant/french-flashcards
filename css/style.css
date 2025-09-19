@@ -79,11 +79,22 @@ select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-off
 .stats{font-size:16px;color:var(--muted);text-align:right;margin-bottom:8px}
 .stage{display:flex;justify-content:center;align-items:flex-start}
 
-/* Card */
+/* Card — fixed, consistent size and centred content */
 .card{
-  width:min(900px,92vw);min-height:260px;background:var(--card);
-  border:2px solid var(--card-border);border-radius:6px;
-  box-shadow:0 4px 10px rgba(0,0,0,.08);padding:18px;position:relative;cursor:pointer
+  width: min(900px, 92vw);
+  min-height: 280px;                 /* desktop baseline */
+  background: var(--card);
+  border: 2px solid var(--card-border);
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.08);
+  padding: 18px;
+  position: relative;
+  cursor: pointer;
+
+  /* NEW: keep content centred regardless of text length */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .meta{position:absolute;top:12px;left:16px;font-size:16px;color:#1f1f1f}
 .front .term{font-size:48px;line-height:1.1;font-weight:700;margin-top:34px}
