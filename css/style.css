@@ -8,19 +8,55 @@ html{box-sizing:border-box}
 html,body{height:100%}
 body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#fff;color:var(--ink);font-size:19px;line-height:1.5}
 
-/* Layout */
-.app{display:grid;grid-template-columns:360px 1fr;min-height:100vh}
-@media(max-width:960px){.app{grid-template-columns:1fr}}
+/* ---------- Topbar (mobile) ---------- */
+.topbar{
+  display:none;
+  position:sticky; top:0; z-index:60;
+  background:#fff; border-bottom:1px solid var(--border);
+  padding:10px 12px; align-items:center; gap:12px;
+}
+.topbar .brand{font-size:20px; margin:0}
+.hamburger{
+  background:#fff; border:2px solid var(--border); border-radius:6px;
+  width:42px; height:42px; font-size:22px; line-height:1;
+}
 
-.side{background:#fff;border-right:1px solid var(--border);padding:24px;position:sticky;top:0;height:100vh;overflow:auto}
+/* ---------- Layout ---------- */
+.app{display:grid;grid-template-columns:360px 1fr;min-height:100vh}
+@media(max-width:960px){
+  .topbar{display:flex}
+  .app{grid-template-columns:1fr}
+}
+
+/* ---------- Sidebar ---------- */
+.side{
+  background:#fff;border-right:1px solid var(--border);
+  position:sticky; top:0; height:100vh; overflow:auto; z-index:50;
+}
+.side-inner{padding:24px}
 .side h1{font-size:28px;margin:0 0 16px}
 .field{margin:16px 0}
 .field label{display:block;font-weight:700;margin-bottom:6px}
-.hint{font-size:16px;color:var(--muted)}
-select,input[type="text"]{width:100%;border:2px solid var(--border);padding:10px 12px;border-radius:0;background:#fff;color:var(--ink);font-size:19px}
+select,input[type="text"]{
+  width:100%;border:2px solid var(--border);padding:10px 12px;border-radius:0;background:#fff;color:var(--ink);font-size:19px
+}
 select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-offset:0}
 
-/* Buttons (GDS-like interactions, keep original colours) */
+/* Off-canvas for mobile */
+@media(max-width:960px){
+  .side{
+    position:fixed; left:0; top:52px; height:calc(100vh - 52px);
+    width:85vw; max-width:420px; transform:translateX(-100%);
+    transition:transform .2s ease; box-shadow:0 8px 30px rgba(0,0,0,.2);
+  }
+  body.menu-open .side{ transform:translateX(0); }
+  .scrim{
+    position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:40;
+  }
+  body.menu-open .scrim{ display:block; }
+}
+
+/* ---------- Buttons (GDS-like) ---------- */
 .btn{
   appearance:none;border:2px solid #0b0c0c;background:#0b0c0c;color:#fff;
   padding:10px 16px;font-weight:700;cursor:pointer;border-radius:0;
@@ -28,31 +64,22 @@ select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-off
   text-decoration:none; display:inline-flex; align-items:center; justify-content:center;
 }
 .btn.secondary{background:#fff;color:#0b0c0c}
-
+.btn.subtle{background:#fff;color:#0b0c0c;border-color:var(--border)}
 .btn:hover{filter:brightness(0.93)}
-.btn:active{
-  transform:translateY(1px);
-  box-shadow:inset 0 2px 0 rgba(0,0,0,.25);
-}
-.btn[disabled], .btn:disabled{
-  opacity:.5; cursor:not-allowed; filter:none; transform:none; box-shadow:none;
-}
+.btn:active{transform:translateY(1px); box-shadow:inset 0 2px 0 rgba(0,0,0,.25)}
+.btn[disabled], .btn:disabled{opacity:.5; cursor:not-allowed; filter:none; transform:none; box-shadow:none}
 
-/* Colour variants (keep hues; hover/active handled by generic rules) */
 .btn.again{background:#d4351c;border-color:#d4351c;color:#fff}
 .btn.good{ background:#00703c;border-color:#00703c;color:#fff}
 .btn.easy{ background:#1d70b8;border-color:#1d70b8;color:#fff}
 
 /* Segmented switch */
 .seg{display:inline-flex;border:2px solid var(--border)}
-.seg button{
-  border:0;background:#fff;padding:10px 12px;font-size:19px;cursor:pointer;
-  transition:background .1s ease, filter .1s ease;
-}
+.seg button{border:0;background:#fff;padding:10px 12px;font-size:19px;cursor:pointer;transition:background .1s, filter .1s}
 .seg button:hover{filter:brightness(0.96)}
 .seg button.active{background:#0b0c0c;color:#fff}
 
-/* Stage */
+/* ---------- Stage ---------- */
 .stageWrap{padding:24px}
 .stats{font-size:16px;color:var(--muted);text-align:right;margin-bottom:8px}
 .stage{display:flex;justify-content:center;align-items:flex-start}
@@ -69,17 +96,14 @@ select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-off
 .pron{font-size:18px;color:#1f1f1f;margin-top:6px}
 .tags{margin-top:10px}
 .tag{display:inline-block;background:#f3f2f1;border:1px solid var(--border);padding:2px 8px;margin-right:6px;font-size:16px}
-
-/* Back term same size as front (your request) */
 .back .answer{font-size:48px;line-height:1.1;font-weight:700;margin-top:34px}
-
 .sentence{font-size:20px;margin-top:10px}
 .notes{margin-top:8px;color:#1f1f1f;font-size:18px}
 
 /* Actions */
 .actions{
   position:sticky;bottom:0;display:flex;gap:10px;justify-content:center;
-  margin-top:16px;padding:10px 0;background:transparent
+  margin-top:16px;padding:10px 0;background:transparent; flex-wrap:wrap;
 }
 
 /* Empty state */
