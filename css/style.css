@@ -98,12 +98,13 @@ select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-off
 /* Card — fixed consistent size, centred vertically, LEFT aligned text */
 .card{
   width:min(900px,92vw);
-  min-height:280px;                /* desktop baseline */
+  /* ↑↑ give extra space at the top for the label (.meta) */
+  padding:56px 24px 24px 24px;   /* was 24px all round */
+  min-height:280px;
   background:var(--card);
   border:2px solid var(--card-border);
   border-radius:6px;
   box-shadow:0 4px 10px rgba(0,0,0,.08);
-  padding:24px;                    /* more inner padding to avoid crowding */
   position:relative;
   cursor:pointer;
 
@@ -111,6 +112,7 @@ select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-off
   flex-direction:column;
   justify-content:center;          /* vertical centring */
 }
+
 .front, .back{
   display:flex;
   flex-direction:column;
@@ -118,17 +120,11 @@ select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-off
   align-items:flex-start;          /* LEFT aligned */
   text-align:left;                 /* LEFT aligned */
 }
-.meta{
-  position:absolute;top:10px;left:16px;
-  font-size:16px;color:#1f1f1f
-}
 
-.card .meta {
-  display: block;
-  font-size: 0.9em;
-  margin-bottom: 0.8em; /* extra breathing space below the label */
-  color: #333;          /* keep it subtle */
-  font-weight: normal;  /* lighter than the vocab word */
+/* The label (“cognate”, etc.) pinned top-left */
+.meta{
+  position:absolute; top:16px; left:20px;
+  font-size:16px; font-weight:400; color:#333;
 }
 
 /* Big headline text (left aligned, no top margin) */
@@ -166,9 +162,10 @@ select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-off
 /* ---------- Mobile adjustments ---------- */
 @media(max-width:640px){
   .card{
-    width:calc(100vw - 32px);  /* full width with margin */
-    min-height:40vh;           /* a little shorter so it doesn’t feel empty */
-    padding:22px;              /* balanced inner padding on mobile */
+    width:calc(100vw - 32px);
+    /* keep the same “extra headroom” on mobile too */
+    padding:48px 22px 22px 22px;   /* was 22px all round */
+    min-height:40vh;
   }
   .front .term,
   .back .answer{
@@ -176,25 +173,9 @@ select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-off
     line-height:1.2;
   }
   .sentence{font-size:18px}
-  .meta{font-size:14px; top:8px}
+  .meta{font-size:14px; top:10px; left:18px}
 
   .btn{ font-size:22px; padding:14px 18px; }
   .actions-primary .btn{min-width:110px}
   .actions-nav .btn{min-width:130px}
 }
-
-/* Extra spacing between card label and main word */
-.card .front {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;            /* space between .meta, .term, .pron, etc. */
-}
-
-.card .meta {
-  font-size: 0.9em;
-  font-weight: normal;
-  margin-bottom: 0.25rem;
-  color: #333;
-}
-
-.card .front .term { margin-top: 0; }
