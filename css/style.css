@@ -109,3 +109,13 @@ select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-off
 .back{display:none}
 .card.flipped .front{display:none}
 .card.flipped .back{display:block}
+
+/* Bigger buttons on mobile */
+@media(max-width:640px){
+  .btn{ 
+    font-size:24px; 
+    padding:18px 26px; 
+  }
+  .actions-primary .btn{min-width:130px}
+  .actions-nav .btn{min-width:170px}
+}
