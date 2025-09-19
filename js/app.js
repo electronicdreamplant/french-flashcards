@@ -1,6 +1,5 @@
 // ---------- configuration ----------
-const DEFAULT_SRC =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTm0yTZkHyweym1ITZbZGg2AJJByj35kMoCXggEwDuRwFwtLNqyhuEaZsNBS_fzbDseq8f8lrnYI3MU/pub?gid=0&single=true&output=csv";
+const DEFAULT_SRC = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTm0yTZkHyweym1ITZbZGg2AJJByj35kMoCXggEwDuRwFwtLNqyhuEaZsNBS_fzbDseq8f8lrnYI3MU/pub?gid=1046747301&single=true&output=csv";
 
 // ---------- state ----------
 const d = id => document.getElementById(id);
