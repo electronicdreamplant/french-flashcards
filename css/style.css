@@ -119,3 +119,21 @@ select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-off
   .actions-primary .btn{min-width:110px}
   .actions-nav .btn{min-width:120px}
 }
+
+/* Balance card padding on mobile */
+@media(max-width:640px){
+  .card{
+    margin-left:16px;
+    margin-right:16px;
+    width:auto;       /* allow it to shrink naturally */
+  }
+}
+
+/* Adjust card text size for mobile */
+@media(max-width:640px){
+  .front .term,
+  .back .answer{
+    font-size:32px;   /* down from 48px */
+  }
+  .sentence{font-size:18px}
+}
