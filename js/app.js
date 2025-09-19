@@ -50,7 +50,7 @@ function mapHeaders(rows){
     pron:     (r[idx('pron')]     || '').trim(),
     tags:     (r[idx('tags')]     || '').trim(),
     notes:    (r[idx('notes')]    || '').trim(),
-    labels:   (r[idx('labels')]   || '').trim(),
+    labels:   (r[idx('labels')]   || '').trim(),   // <- labels supported
   })).filter(x => x.french || x.english);
 }
 
@@ -78,15 +78,10 @@ function grade(which){
 
 // ---------- helpers ----------
 function frenchVisible() {
-  // French side is visible if:
-  // - FR→EN and card is NOT flipped, or
-  // - EN→FR and card IS flipped
   const flipped = d('card').classList.contains('flipped');
   return (state.direction === 'fr-en' && !flipped) ||
          (state.direction === 'en-fr' &&  flipped);
 }
-
-// Always show front side and hide sentence
 function resetToFront() {
   const cardEl = d('card');
   if (cardEl) cardEl.classList.remove('flipped');
@@ -97,13 +92,21 @@ function resetToFront() {
 function filter(){
   const deck   = d('deckFilter').value.toLowerCase();
   const lesson = d('lessonFilter').value.toLowerCase();
+  const label  = d('labelFilter').value.toLowerCase();   // NEW
   const q      = d('search').value.toLowerCase();
 
-  let rows = state.rows.filter(r =>
-    (!deck   || r.deck.toLowerCase()   === deck)   &&
-    (!lesson || r.lesson.toLowerCase() === lesson) &&
-    (!q || (r.french + ' ' + r.english + ' ' + r.sentence + ' ' + r.tags).toLowerCase().includes(q))
-  );
+  let rows = state.rows.filter(r => {
+    const labelsArr = (r.labels || '')
+      .toLowerCase()
+      .split(/[;,]+/)            // support "a;b;c" or "a,b,c"
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    return (!deck   || r.deck.toLowerCase()   === deck) &&
+           (!lesson || r.lesson.toLowerCase() === lesson) &&
+           (!label  || labelsArr.includes(label)) &&
+           (!q || (r.french + ' ' + r.english + ' ' + r.sentence + ' ' + r.tags).toLowerCase().includes(q)); // search unchanged
+  });
 
   loadProgress();
   if (d('studyMode').value === 'due') {
@@ -116,7 +119,7 @@ function filter(){
 
   state.queue = rows;
   state.idx = 0;
-  resetToFront();   // ensure correct side after filtering
+  resetToFront();
   stats();
   render();
 }
@@ -127,7 +130,6 @@ function stats(){
 
 // ---------- render ----------
 function render(){
-  // Keep 'showSentence' only if French is currently visible
   state.showSentence = state.showSentence && frenchVisible();
 
   const card    = d('card'), actions = d('actions'), empty = d('empty');
@@ -189,10 +191,24 @@ async function loadCsv(url){
 }
 
 function populate(){
+  // Decks
   const decks   = [...new Set(state.rows.map(r=>r.deck).filter(Boolean))].sort();
-  const lessons = [...new Set(state.rows.map(r=>r.lesson).filter(Boolean))].sort((a,b)=>isNaN(a)-isNaN(b)||a-b);
   d('deckFilter').innerHTML   = '<option value="">All decks</option>' + decks.map(x=>`<option>${x}</option>`).join('');
-  d('lessonFilter').innerHTML = '<option value="">All</option>'      + lessons.map(x=>`<option>${x}</option>`).join('');
+
+  // Lessons
+  const lessons = [...new Set(state.rows.map(r=>r.lesson).filter(Boolean))].sort((a,b)=>isNaN(a)-isNaN(b)||a-b);
+  d('lessonFilter').innerHTML = '<option value="">All</option>' + lessons.map(x=>`<option>${x}</option>`).join('');
+
+  // Labels (support multiple labels per card; split on ; or ,)
+  const labelTokens = new Set();
+  state.rows.forEach(r=>{
+    (r.labels || '').split(/[;,]+/).forEach(tok=>{
+      const t = tok.trim();
+      if (t) labelTokens.add(t);
+    });
+  });
+  const labels = [...labelTokens].sort((a,b)=> a.localeCompare(b, undefined, {sensitivity:'base'}));
+  d('labelFilter').innerHTML = '<option value="">All labels</option>' + labels.map(x=>`<option>${x}</option>`).join('');
 }
 
 // ---------- events ----------
@@ -204,19 +220,16 @@ d('resetBtn').addEventListener('click', ()=>{
     filter();
   }
 });
-['deckFilter','lessonFilter','studyMode','shuffle'].forEach(id=> d(id).addEventListener('change', filter));
+['deckFilter','lessonFilter','labelFilter','studyMode','shuffle'].forEach(id=> d(id).addEventListener('change', filter));
 d('search').addEventListener('input', filter);
 
-// Flip button (space also flips below)
 d('flipBtn').addEventListener('click', ()=>{
   d('card').classList.toggle('flipped');
-  state.showSentence = false; // hide when flipping
+  state.showSentence = false;
   render();
 });
 
-// Click-to-reveal sentence (French side only)
 d('card').addEventListener('click', (e)=>{
-  // Ignore clicks on the bottom actions bar
   if (e.target.closest('.actions')) return;
   if (frenchVisible()) {
     state.showSentence = !state.showSentence;
@@ -224,12 +237,11 @@ d('card').addEventListener('click', (e)=>{
   }
 });
 
-// Keyboard shortcuts
 window.addEventListener('keydown', e=>{
   if(e.key===' '){
     e.preventDefault();
     d('card').classList.toggle('flipped');
-    state.showSentence = false;  // hide sentence on flip
+    state.showSentence = false;
     render();
   }
   if(e.key==='ArrowRight') next(1);
@@ -239,19 +251,14 @@ window.addEventListener('keydown', e=>{
   if(e.key==='3'||e.key.toLowerCase()==='e') grade('easy');
 });
 
-// Direction segmented control — reset & auto-refresh
 document.getElementById('dirSeg').addEventListener('click', e=>{
   const b = e.target.closest('button');
   if (!b) return;
-
-  // update active state
   [...document.querySelectorAll('#dirSeg button')].forEach(x => x.classList.remove('active'));
   b.classList.add('active');
-
-  // set direction and reset to front
-  state.direction = b.dataset.dir;   // "fr-en" or "en-fr"
+  state.direction = b.dataset.dir;
   resetToFront();
-  render();                          // auto-refresh view
+  render();
 });
 
 // ---------- startup ----------
