@@ -39,7 +39,7 @@ function mapHeaders(rows){
   const header = rows[0].map(h=> (h||'').trim().toLowerCase());
   const idx = n => header.indexOf(n);
   return rows.slice(1).map((r,ix)=>({
-    id:       r[idx('id')]        || String(ix+1),
+    id: makeKey(r, idx),
     deck:     (r[idx('deck')]     || '').trim(),
     lesson:   (r[idx('lesson')]   || '').trim(),
     article:  (r[idx('article')]  || '').trim(),
@@ -51,6 +51,11 @@ function mapHeaders(rows){
     notes:    (r[idx('notes')]    || '').trim(),
     labels:   (r[idx('labels')]   || '').trim(),
   })).filter(x => x.french || x.english);
+}
+
+function makeKey(row, idx) {
+  const val = (name) => (row[idx(name)] || '').toString().trim().toLowerCase();
+  return [val('deck'), val('lesson'), val('article'), val('french'), val('english')].join('¦');
 }
 
 // ---------- storage ----------
