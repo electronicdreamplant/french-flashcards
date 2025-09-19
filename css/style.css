@@ -74,6 +74,22 @@ select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-off
 .seg button:hover{filter:brightness(0.96)}
 .seg button.active{background:#0b0c0c;color:#fff}
 
+/* Make it prominent and full width */
+.btn.full { width: 100%; display: inline-flex; justify-content: center; }
+
+/* Blue action button in GDS spirit */
+.btn.add-vocab {
+  background: #1d70b8;      /* GOV.UK blue */
+  color: #fff;
+  border: 1px solid #1d70b8;
+  font-weight: 700;
+}
+.btn.add-vocab:hover { background: #003078; border-color: #003078; }
+.btn.add-vocab:active { transform: translateY(1px); }
+
+/* Small gap below for breathing room */
+.side .field:first-of-type { margin-bottom: 1rem; }
+
 /* ---------- Stage ---------- */
 .stageWrap{padding:24px}
 .stats{font-size:16px;color:var(--muted);text-align:right;margin-bottom:8px}
