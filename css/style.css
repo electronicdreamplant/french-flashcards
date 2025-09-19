@@ -110,12 +110,12 @@ select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-off
 .card.flipped .front{display:none}
 .card.flipped .back{display:block}
 
-/* Bigger buttons on mobile */
+/* Mobile button sizing (refined) */
 @media(max-width:640px){
   .btn{ 
-    font-size:24px; 
-    padding:18px 26px; 
+    font-size:22px; 
+    padding:14px 18px;   /* smaller padding than before */
   }
-  .actions-primary .btn{min-width:130px}
-  .actions-nav .btn{min-width:170px}
+  .actions-primary .btn{min-width:110px}
+  .actions-nav .btn{min-width:120px}
 }
