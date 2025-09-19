@@ -123,11 +123,12 @@ select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-off
   font-size:16px;color:#1f1f1f
 }
 
-.card-label {
+.card .meta {
   display: block;
   font-size: 0.9em;
   margin-bottom: 0.8em; /* extra breathing space below the label */
-  color: #333; /* keep it subtle */
+  color: #333;          /* keep it subtle */
+  font-weight: normal;  /* lighter than the vocab word */
 }
 
 /* Big headline text (left aligned, no top margin) */
