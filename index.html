@@ -6,175 +6,164 @@
   <title>French Vocab Flashcards</title>
   <style>
     :root{
-      --bg:#0b0f14; --card:#0f1620; --ink:#eaf2ff; --muted:#9bb0c9; --acc:#66b3ff; --danger:#ff6b6b; --ok:#7cd992;
+      --page:#f7f8fa; --ink:#111; --muted:#555; --accent:#0b57d0;
+      --card:#ffe36d; /* yellow card */
+      --card-border:#e2c44f;
     }
-    html,body{height:100%;}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Ubuntu,Arial,sans-serif;background:linear-gradient(180deg,#0b0f14 0%,#101825 100%);color:var(--ink);}    
-    header{display:flex;gap:1rem;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid #152235;}
-    header h1{font-size:1.1rem;font-weight:700;margin:0;color:var(--ink);}    
-    .container{max-width:1100px;margin:0 auto;padding:1rem;}
-    .controls{display:grid;grid-template-columns:repeat(12,1fr);gap:.75rem;align-items:end}
-    .controls > *{grid-column:span 12;background:#0f1724;border:1px solid #21314a;border-radius:14px;padding:.65rem .75rem;color:var(--ink)}
-    @media(min-width:768px){.controls> .wide{grid-column:span 6}.controls> .sm{grid-column:span 2}.controls> .md{grid-column:span 3}.controls> .full{grid-column:span 12}}
-    label{display:block;font-size:.75rem;color:var(--muted);margin-bottom:.35rem}
-    select,input[type="text"]{width:100%;background:transparent;border:none;outline:none;color:var(--ink)}
-    .row{display:flex;gap:.75rem;flex-wrap:wrap}
-    .btn{appearance:none;border:none;border-radius:12px;padding:.65rem .9rem;background:#17263a;color:var(--ink);cursor:pointer}
-    .btn:hover{filter:brightness(1.1)}
-    .btn.primary{background:linear-gradient(180deg,#2b69ff,#204ac7)}
-    .btn.ghost{background:#0f1724;border:1px solid #21314a}
-    .stats{font-size:.85rem;color:var(--muted)}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;background:var(--page);color:var(--ink)}
+
+    /* Layout: clean sidebar on the left, card high on the page */
+    .app{display:grid;grid-template-columns:360px 1fr;gap:0;min-height:100vh}
+    @media (max-width:980px){.app{grid-template-columns:1fr}}
+
+    /* Sidebar */
+    .side{background:#fff;border-right:1px solid #e8e8e8;padding:18px 18px 24px;position:sticky;top:0;height:100vh;overflow:auto}
+    .side h1{font-size:22px;margin:0 0 14px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .full{grid-column:1 / -1}
+    .field label{display:block;font-size:13px;color:#666;margin:0 0 6px}
+    input[type="text"], select{width:100%;padding:10px 12px;border:1px solid #cfcfcf;border-radius:6px;background:#fff;color:#111;font-size:15px}
+    .buttons{display:flex;gap:8px}
+    .btn{appearance:none;border:1px solid #cfcfcf;background:#fff;color:#111;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:600}
+    .btn.primary{background:#111;color:#fff;border-color:#111}
+    .hint{font-size:12px;color:#777;margin-top:6px}
+
+    /* Stage */
+    .stageWrap{padding:22px}
+    .stats{font-size:13px;color:#666;text-align:right;margin-bottom:10px}
+    .stage{display:flex;justify-content:center;align-items:flex-start}
 
     /* Card */
-    .stage{display:grid;place-items:center;margin:1.25rem 0}
-    .card{width:min(780px,92vw);min-height:260px;background:radial-gradient(1200px 380px at 100% 0%,#142036 0%,#0f1626 30%,#0d1422 100%); border:1px solid #21314a;border-radius:22px;box-shadow:0 10px 40px rgba(0,0,0,.35);padding:1.2rem;position:relative;perspective:1200px}
-    .card-inner{position:relative;transform-style:preserve-3d;transition:transform .5s ease}
-    .card.flipped .card-inner{transform:rotateY(180deg)}
-    .face{position:relative;backface-visibility:hidden;min-height:220px;display:flex;flex-direction:column;justify-content:center;padding:1rem}
-    .face.back{transform:rotateY(180deg)}
-    .tagline{position:absolute;top:.9rem;left:1rem;font-size:.75rem;color:var(--muted)}
-    .french{font-size:2.2rem;line-height:1.1;font-weight:800;letter-spacing:.2px}
-    .article{opacity:.8;margin-right:.4rem;font-weight:700}
-    .pron{font-size:.9rem;color:var(--muted);margin-top:.25rem}
-    .english{font-size:1.6rem;font-weight:700;margin:.25rem 0 .5rem}
-    .sentence{font-size:1.05rem;color:#c7d8f3}
-    .notes{margin-top:.5rem;color:#9bb0c9;font-size:.9rem}
-    .pill{display:inline-flex;align-items:center;gap:.4rem;background:#132135;border:1px solid #21314a;border-radius:999px;padding:.2rem .6rem;font-size:.75rem;color:#a3b7d5;margin-right:.4rem}
+    .card{width:min(900px,92vw);min-height:260px;background:var(--card);border:2px solid var(--card-border);border-radius:18px;box-shadow:0 6px 18px rgba(0,0,0,.08);padding:18px;position:relative}
+    .meta{position:absolute;top:12px;left:16px;font-size:12px;color:#333}
+    .front .term{font-size:50px;line-height:1.1;font-weight:800;margin-top:28px}
+    .front .article{margin-right:.4rem;opacity:.9}
+    .pron{font-size:14px;color:#333;margin-top:6px}
+    .tags{margin-top:10px}
+    .back .answer{font-size:38px;font-weight:800;margin-top:28px}
+    .sentence{font-size:18px;margin-top:8px;color:#222}
+    .notes{margin-top:6px;color:#333;font-size:14px}
 
-    /* Actions */
-    .actions{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;justify-content:center;margin-top:1rem}
-    .again{background:linear-gradient(180deg,#7a1f1f,#581616)}
-    .good{background:linear-gradient(180deg,#26522c,#1a3a1f)}
-    .easy{background:linear-gradient(180deg,#2b69ff,#204ac7)}
+    .actions{position:sticky;bottom:0;display:flex;gap:8px;justify-content:center;margin-top:14px;padding:10px 0;background:transparent}
+    .btn.again{background:#fbe3e3;border-color:#f0bcbc}
+    .btn.good{background:#e6f4ea;border-color:#b9e0c3}
+    .btn.easy{background:#e8f0fe;border-color:#c7d3fe}
 
-    .footer{display:flex;justify-content:space-between;align-items:center;margin-top:.6rem;color:var(--muted);font-size:.8rem}
-    .hidden{display:none}
-    .error{color:#ffb4b4}
+    .empty{color:#666;text-align:center;margin-top:12px}
+
+    /* Segmented switch */
+    .seg{display:inline-flex;border:1px solid #cfcfcf;border-radius:8px;overflow:hidden}
+    .seg button{border:0;background:#fff;padding:8px 12px;font-size:14px;cursor:pointer}
+    .seg button.active{background:#111;color:#fff}
+
+    /* Flip handling */
+    .back{display:none}
+    .card.flipped .front{display:none}
+    .card.flipped .back{display:block}
   </style>
 </head>
 <body>
-  <header>
-    <h1>French Vocab Flashcards</h1>
-    <div class="stats" id="stats">Loading…</div>
-  </header>
-  <div class="container">
-
-    <div class="controls">
-      <div class="md">
-        <label>Data source (CSV URL)</label>
-        <input id="csvUrl" type="text" placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv" />
-      </div>
-      <div class="md">
-        <label>Deck</label>
-        <select id="deckFilter"><option value="">All decks</option></select>
-      </div>
-      <div class="sm">
-        <label>Lesson</label>
-        <select id="lessonFilter"><option value="">All</option></select>
-      </div>
-      <div class="wide">
-        <label>Search (French / English / sentence / tags)</label>
-        <input id="search" type="text" placeholder="type to filter… (e.g. pain, breakfast, OU-L2)" />
-      </div>
-      <div class="sm">
-        <label>Study</label>
-        <select id="studyMode">
-          <option value="due">Due today</option>
-          <option value="all">All filtered</option>
-        </select>
-      </div>
-      <div class="sm">
-        <label>Shuffle</label>
-        <select id="shuffle">
-          <option value="yes">Yes</option>
-          <option value="no">No</option>
-        </select>
-      </div>
-      <div class="sm">
-        <label>&nbsp;</label>
-        <button class="btn primary" id="loadBtn">Load</button>
-      </div>
-      <div class="sm">
-        <label>&nbsp;</label>
-        <button class="btn ghost" id="resetBtn" title="Clears local progress for this source">Reset progress</button>
-      </div>
-    </div>
-
-    <div class="stage">
-      <div class="card hidden" id="card">
-        <div class="card-inner">
-          <div class="face front">
-            <div class="tagline" id="metaFront"></div>
-            <div class="french"><span class="article" id="article">le</span><span id="french">pain</span></div>
-            <div class="pron" id="pron"></div>
-            <div class="notes" id="tags"></div>
+  <div class="app">
+    <aside class="side">
+      <h1>French Vocab Flashcards</h1>
+      <div class="grid">
+        <div class="field full">
+          <label>Data source (CSV URL)</label>
+          <input id="csvUrl" type="text" placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv" />
+          <div class="buttons" style="margin-top:8px">
+            <button class="btn primary" id="loadBtn">Load</button>
+            <button class="btn" id="resetBtn" title="Clear progress for this source">Reset progress</button>
           </div>
-          <div class="face back">
-            <div class="tagline" id="metaBack"></div>
-            <div class="english" id="english">bread</div>
-            <div class="sentence" id="sentence">Je mange du pain le matin.</div>
+          <div class="hint">Press Enter or Load. Headers: id, deck, lesson, article, french, english, sentence, pron, tags, notes, <strong>labels</strong></div>
+        </div>
+
+        <div class="field">
+          <label>Direction</label>
+          <div class="seg" id="dirSeg">
+            <button data-dir="fr-en" class="active">FR → EN</button>
+            <button data-dir="en-fr">EN → FR</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Study</label>
+          <select id="studyMode"><option value="due">Due today</option><option value="all">All filtered</option></select>
+        </div>
+
+        <div class="field">
+          <label>Deck</label>
+          <select id="deckFilter"><option value="">All decks</option></select>
+        </div>
+        <div class="field">
+          <label>Lesson</label>
+          <select id="lessonFilter"><option value="">All</option></select>
+        </div>
+
+        <div class="field full">
+          <label>Search (French / English / sentence / tags)</label>
+          <input id="search" type="text" placeholder="e.g. pain, breakfast, OU-L2" />
+        </div>
+
+        <div class="field">
+          <label>Shuffle</label>
+          <select id="shuffle"><option value="yes">Yes</option><option value="no">No</option></select>
+        </div>
+      </div>
+    </aside>
+
+    <main class="stageWrap">
+      <div class="stats" id="stats">Loading…</div>
+      <div class="stage">
+        <div class="card" id="card" style="display:none">
+          <div class="meta" id="meta"></div>
+
+          <div class="front" id="front">
+            <div class="term"><span class="article" id="article"></span><span id="term"></span></div>
+            <div class="pron" id="pron"></div>
+            <div class="tags" id="tags"></div>
+          </div>
+
+          <div class="back" id="back">
+            <div class="answer" id="answer"></div>
+            <div class="sentence" id="sentence"></div>
             <div class="notes" id="notes"></div>
           </div>
         </div>
       </div>
-      <div id="empty" class="notes">No cards match your filters (or nothing due). Try switching Study → “All filtered”.</div>
-    </div>
 
-    <div class="actions hidden" id="actions">
-      <button class="btn again" id="againBtn" title="1 or A">Again</button>
-      <button class="btn good" id="goodBtn" title="2 or G">Good</button>
-      <button class="btn easy" id="easyBtn" title="3 or E">Easy</button>
-      <button class="btn" id="flipBtn" title="Space">Flip</button>
-    </div>
+      <div class="actions" id="actions" style="display:none">
+        <button class="btn again" id="againBtn" title="1 or A">Again</button>
+        <button class="btn good" id="goodBtn" title="2 or G">Good</button>
+        <button class="btn easy" id="easyBtn" title="3 or E">Easy</button>
+        <button class="btn" id="flipBtn" title="Space">Flip</button>
+      </div>
 
-    <div class="footer">
-      <div>Keyboard: Space = flip · 1/A = Again · 2/G = Good · 3/E = Easy · ←/→ = Prev/Next</div>
-      <div id="status" class="error"></div>
-    </div>
+      <div class="empty" id="empty">No cards match your filters (or nothing due). Try Study → "All filtered".</div>
+    </main>
   </div>
 
   <script>
-  /**
-   * SIMPLE FLASHCARD APP
-   * — Pulls a CSV (Google Sheets → File ▸ Share ▸ Publish to web ▸ CSV).
-   * — Columns expected (header row, case-insensitive):
-   *   id, deck, lesson, article, french, english, sentence, pron, tags, notes
-   * — Stores progress (Leitner schedule) in localStorage scoped by CSV URL.
-   */
+  // ----------------- state -----------------
+  const d = id => document.getElementById(id);
+  const state = { src:"", rows:[], queue:[], idx:0, today: new Date().toISOString().slice(0,10), progress:{}, direction:'fr-en' };
 
-  const d = (id)=>document.getElementById(id);
-  const state = {
-    src:"", rows:[], filtered:[], queue:[], idx:0,
-    today: new Date().toISOString().slice(0,10),
-    progress:{}, // { id: { box:1..5, due:"YYYY-MM-DD" } }
-  };
-
-  // Basic CSV parser with quoted field support
+  // ----------------- csv -----------------
   function parseCSV(text){
-    const rows=[]; let i=0, field='', row=[], inQ=false; 
-    const pushField=()=>{row.push(field); field=''};
-    const pushRow=()=>{rows.push(row); row=[]};
+    const out=[], row=[], pushRow=()=>{ out.push(row.splice(0)); };
+    let i=0, field='', inQ=false;
+    const pushField=()=>{ row.push(field); field=''; };
     while(i<text.length){
       const c=text[i];
-      if(inQ){
-        if(c==='"'){
-          if(text[i+1]==='"'){ field+='"'; i+=2; continue;} else { inQ=false; i++; continue; }
-        } else { field+=c; i++; continue; }
-      } else {
-        if(c==='"'){ inQ=true; i++; continue; }
-        if(c===','){ pushField(); i++; continue; }
-        if(c==='\n' || c==='\r'){ if(field!==''||row.length){ pushField(); pushRow(); } i++; if(c==='\r' && text[i]==='\n') i++; continue; }
-        field+=c; i++;
-      }
+      if(inQ){ if(c==='"'){ if(text[i+1]==='"'){ field+='"'; i+=2; continue;} inQ=false; i++; } else { field+=c; i++; } }
+      else { if(c==='"'){ inQ=true; i++; } else if(c===','){ pushField(); i++; } else if(c==='\n' || c==='\r'){ pushField(); if(row.length) pushRow(); i++; if(c==='\r' && text[i]==='\n') i++; } else { field+=c; i++; } }
     }
     if(field!==''||row.length){ pushField(); pushRow(); }
-    return rows;
+    return out;
   }
-
   function mapHeaders(rows){
     if(!rows.length) return [];
     const header = rows[0].map(h=>h.trim().toLowerCase());
-    const idx = (name)=> header.indexOf(name);
+    const idx = n => header.indexOf(n);
     return rows.slice(1).map((r,ix)=>({
       id: r[idx('id')] || String(ix+1),
       deck: (r[idx('deck')]||'').trim(),
@@ -186,141 +175,119 @@
       pron: (r[idx('pron')]||'').trim(),
       tags: (r[idx('tags')]||'').trim(),
       notes: (r[idx('notes')]||'').trim(),
+      labels: (r[idx('labels')]||'').trim(),
     })).filter(x=>x.french||x.english);
   }
 
-  function saveProgress(){ localStorage.setItem(key(), JSON.stringify(state.progress)); }
-  function loadProgress(){ state.progress = JSON.parse(localStorage.getItem(key())||'{}'); }
-  function key(){ return 'flashcards::'+state.src; }
+  // ----------------- storage -----------------
+  const key = ()=> 'flashcards::'+state.src;
+  const saveProgress = ()=> localStorage.setItem(key(), JSON.stringify(state.progress));
+  const loadProgress = ()=> state.progress = JSON.parse(localStorage.getItem(key())||'{}');
 
-  // Leitner schedule days per box
-  const SCHED = {1:0, 2:1, 3:2, 4:4, 5:7};
-  function nextDate(from, days){ const dt = new Date(from); dt.setDate(dt.getDate()+days); return dt.toISOString().slice(0,10); }
-  function ensureCardProgress(id){ if(!state.progress[id]) state.progress[id] = {box:1, due:state.today}; }
-  function gradeCurrent(grade){
-    const card = state.queue[state.idx]; if(!card) return;
-    ensureCardProgress(card.id);
-    const p = state.progress[card.id];
-    if(grade==='again'){ p.box = 1; }
-    if(grade==='good'){ p.box = Math.min(5, p.box+1); }
-    if(grade==='easy'){ p.box = Math.min(5, p.box+2); }
-    p.due = nextDate(state.today, SCHED[p.box]);
-    saveProgress();
-    nextCard(1);
+  // ----------------- scheduling -----------------
+  const SCHED={1:0,2:1,3:2,4:4,5:7};
+  const nextDate=(from,days)=>{const dt=new Date(from); dt.setDate(dt.getDate()+days); return dt.toISOString().slice(0,10)};
+  const ensure=(id)=>{ if(!state.progress[id]) state.progress[id]={box:1,due:state.today}; };
+  function grade(grade){
+    const c=state.queue[state.idx]; if(!c) return; ensure(c.id);
+    const p=state.progress[c.id];
+    if(grade==='again') p.box=1; if(grade==='good') p.box=Math.min(5,p.box+1); if(grade==='easy') p.box=Math.min(5,p.box+2);
+    p.due = nextDate(state.today,SCHED[p.box]); saveProgress();
+    next(1);
   }
 
-  function filterRows(){
-    const deck = d('deckFilter').value.toLowerCase();
-    const lesson = d('lessonFilter').value.toLowerCase();
-    const q = d('search').value.toLowerCase();
-    let rows = state.rows.filter(r=> (
-      (!deck || r.deck.toLowerCase()===deck) &&
-      (!lesson || r.lesson.toLowerCase()===lesson) &&
-      (!q || (r.french+" "+r.english+" "+r.sentence+" "+r.tags).toLowerCase().includes(q))
-    ));
+  // ----------------- filtering -----------------
+  function filter(){
+    const deck=d('deckFilter').value.toLowerCase();
+    const lesson=d('lessonFilter').value.toLowerCase();
+    const q=d('search').value.toLowerCase();
+    let rows=state.rows.filter(r=>(!deck||r.deck.toLowerCase()===deck)&&(!lesson||r.lesson.toLowerCase()===lesson)&&(!q||(r.french+" "+r.english+" "+r.sentence+" "+r.tags).toLowerCase().includes(q)));
+    loadProgress();
+    if(d('studyMode').value==='due') rows=rows.filter(r=>{ensure(r.id); return state.progress[r.id].due<=state.today;});
+    if(d('shuffle').value==='yes') for(let i=rows.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [rows[i],rows[j]]=[rows[j],rows[i]]}
+    state.queue=rows; state.idx=0; stats(); render();
+  }
+  function stats(){ d('stats').textContent = `${state.queue.length} cards · ${d('studyMode').value==='due'?'due today':'in view'}`; }
 
-    // Build queue
-    const mode = d('studyMode').value; loadProgress();
-    if(mode==='due'){
-      rows = rows.filter(r=>{
-        ensureCardProgress(r.id);
-        return state.progress[r.id].due <= state.today;
-      });
+  // ----------------- render -----------------
+  function render(){
+    const card=d('card'), actions=d('actions'), empty=d('empty');
+    const c=state.queue[state.idx];
+    if(!c){ card.style.display='none'; actions.style.display='none'; empty.style.display='block'; return; }
+    empty.style.display='none'; actions.style.display='flex'; card.style.display='block';
+
+    const p=state.progress[c.id]||{box:1,due:state.today};
+    const metaText = c.labels || '';
+    d('meta').textContent = metaText;
+
+    const fr = (c.article?c.article+" ":"") + (c.french||"");
+    if(state.direction==='fr-en'){
+      d('article').textContent=c.article||'';
+      d('term').textContent=c.french||'';
+      d('pron').textContent=c.pron||'';
+      d('answer').textContent=c.english||'';
+    } else {
+      d('article').textContent='';
+      d('term').textContent=c.english||'';
+      d('pron').textContent='';
+      d('answer').textContent=fr.trim();
     }
 
-    if(d('shuffle').value==='yes'){
-      for(let i=rows.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [rows[i],rows[j]]=[rows[j],rows[i]]; }
-    }
-
-    state.filtered = rows;
-    state.queue = rows;
-    state.idx = 0;
-    updateStats();
-    renderCard();
+    d('sentence').textContent=c.sentence||'';
+    d('notes').textContent=c.notes||'';
+    d('tags').innerHTML=(c.tags||'').split(/[;, ]+/).filter(Boolean).slice(0,6).map(t=>`<span class="pill">${t}</span>`).join(' ');
   }
+  const next=(step)=>{ if(!state.queue.length) return; state.idx=(state.idx+(step||1)+state.queue.length)%state.queue.length; render(); };
 
-  function updateStats(){
-    d('stats').textContent = `${state.queue.length} cards · ${d('studyMode').value==='due'?'due today':'in view'}`;
-  }
-
-  function renderCard(){
-    const cardEl = d('card');
-    const empt = d('empty');
-    const actions = d('actions');
-    cardEl.classList.remove('flipped');
-    const c = state.queue[state.idx];
-    if(!c){ cardEl.classList.add('hidden'); actions.classList.add('hidden'); empt.classList.remove('hidden'); return; }
-    empt.classList.add('hidden'); actions.classList.remove('hidden'); cardEl.classList.remove('hidden');
-    d('article').textContent = c.article || '';
-    d('french').textContent = c.french || '';
-    d('pron').textContent = c.pron || '';
-    d('english').textContent = c.english || '';
-    d('sentence').textContent = c.sentence || '';
-    d('notes').textContent = c.notes || '';
-    d('tags').innerHTML = (c.tags||'').split(/[;, ]+/).filter(Boolean).slice(0,5).map(t=>`<span class="pill">${t}</span>`).join(' ');
-
-    const p = state.progress[c.id] || {box:1,due:state.today};
-    d('metaFront').textContent = `${c.deck||'—'} • Lesson ${c.lesson||'—'} • Box ${p.box} · due ${p.due}`;
-    d('metaBack').textContent = d('metaFront').textContent;
-  }
-
-  function flip(){ d('card').classList.toggle('flipped'); }
-  function nextCard(step){ if(!state.queue.length) return; state.idx = (state.idx + (step||1) + state.queue.length) % state.queue.length; renderCard(); }
-
+  // ----------------- load -----------------
   async function loadCsv(url){
-    state.src = url.trim(); if(!state.src) { d('status').textContent = 'Please paste a CSV URL.'; return; }
-    d('status').textContent = '';
+    state.src=url.trim(); if(!state.src){ alert('Please enter a CSV URL'); return; }
     try{
-      const res = await fetch(state.src, {headers:{'Cache-Control':'no-cache'}});
+      const res=await fetch(state.src,{headers:{'Cache-Control':'no-cache'}});
       if(!res.ok) throw new Error('HTTP '+res.status);
-      const txt = await res.text();
-      const rows = parseCSV(txt);
-      state.rows = mapHeaders(rows);
-      loadProgress();
-      populateFilters();
-      filterRows();
-    }catch(e){ d('status').textContent = 'Load failed: '+e.message; }
+      const txt=await res.text();
+      state.rows=mapHeaders(parseCSV(txt));
+      localStorage.setItem('flashcards::lastSrc', state.src);
+      populate(); filter();
+    }catch(e){ alert('Load failed: '+e.message); }
+  }
+  function populate(){
+    const decks=[...new Set(state.rows.map(r=>r.deck).filter(Boolean))].sort();
+    const lessons=[...new Set(state.rows.map(r=>r.lesson).filter(Boolean))].sort((a,b)=>isNaN(a)-isNaN(b)||a-b);
+    d('deckFilter').innerHTML='<option value="">All decks</option>'+decks.map(x=>`<option>${x}</option>`).join('');
+    d('lessonFilter').innerHTML='<option value="">All</option>'+lessons.map(x=>`<option>${x}</option>`).join('');
   }
 
-  function populateFilters(){
-    const decks = [...new Set(state.rows.map(r=>r.deck).filter(Boolean))].sort();
-    const lessons = [...new Set(state.rows.map(r=>r.lesson).filter(Boolean))].sort((a,b)=>isNaN(a)-isNaN(b)||a-b);
-    const deckSel = d('deckFilter'); deckSel.innerHTML = '<option value="">All decks</option>' + decks.map(x=>`<option>${x}</option>`).join('');
-    const lessonSel = d('lessonFilter'); lessonSel.innerHTML = '<option value="">All</option>' + lessons.map(x=>`<option>${x}</option>`).join('');
-  }
-
-  // Events
+  // ----------------- events -----------------
   d('loadBtn').addEventListener('click',()=>loadCsv(d('csvUrl').value));
-  d('resetBtn').addEventListener('click',()=>{ if(confirm('Reset progress for this data source?')){ localStorage.removeItem(key()); loadProgress(); filterRows(); }});
-  d('deckFilter').addEventListener('change',filterRows);
-  d('lessonFilter').addEventListener('change',filterRows);
-  d('search').addEventListener('input',()=>{ filterRows(); });
-  d('studyMode').addEventListener('change',filterRows);
-  d('shuffle').addEventListener('change',filterRows);
-  d('flipBtn').addEventListener('click',flip);
-  d('againBtn').addEventListener('click',()=>gradeCurrent('again'));
-  d('goodBtn').addEventListener('click',()=>gradeCurrent('good'));
-  d('easyBtn').addEventListener('click',()=>gradeCurrent('easy'));
-
-  // keyboard
-  window.addEventListener('keydown',(e)=>{
-    if(e.key===' '){ e.preventDefault(); flip(); }
-    if(e.key==='1' || e.key.toLowerCase()==='a'){ gradeCurrent('again'); }
-    if(e.key==='2' || e.key.toLowerCase()==='g'){ gradeCurrent('good'); }
-    if(e.key==='3' || e.key.toLowerCase()==='e'){ gradeCurrent('easy'); }
-    if(e.key==='ArrowRight'){ nextCard(1); }
-    if(e.key==='ArrowLeft'){ nextCard(-1); }
+  d('csvUrl').addEventListener('keydown',e=>{ if(e.key==='Enter') loadCsv(d('csvUrl').value); });
+  d('resetBtn').addEventListener('click',()=>{ if(confirm('Reset progress for this source?')){ localStorage.removeItem('flashcards::'+state.src); state.progress={}; filter(); } });
+  ['deckFilter','lessonFilter','studyMode','shuffle'].forEach(id=> d(id).addEventListener('change',filter));
+  d('search').addEventListener('input',filter);
+  d('flipBtn').addEventListener('click',()=>{ d('card').classList.toggle('flipped'); });
+  d('againBtn').addEventListener('click',()=>grade('again'));
+  d('goodBtn').addEventListener('click',()=>grade('good'));
+  d('easyBtn').addEventListener('click',()=>grade('easy'));
+  window.addEventListener('keydown',e=>{
+    if(e.key===' ') { e.preventDefault(); d('card').classList.toggle('flipped'); }
+    if(e.key==='ArrowRight') next(1);
+    if(e.key==='ArrowLeft') next(-1);
+    if(e.key==='1'||e.key.toLowerCase()==='a') grade('again');
+    if(e.key==='2'||e.key.toLowerCase()==='g') grade('good');
+    if(e.key==='3'||e.key.toLowerCase()==='e') grade('easy');
+  });
+  document.getElementById('dirSeg').addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b) return; [...document.querySelectorAll('#dirSeg button')].forEach(x=>x.classList.remove('active')); b.classList.add('active'); state.direction=b.dataset.dir; render();
   });
 
-  // Optional: demo data so you can play immediately. Remove if you want.
-  const demoCSV = `id,deck,lesson,article,french,english,sentence,pron,tags,notes\n1,Food,1,le,pain,bread,Je mange du pain le matin.,,OU-L1; noun,\n2,Food,1,la,pomme,apple,La pomme est rouge.,,OU-L1; noun,\n3,Travel,2,le,train,train,Nous prenons le train à 9h.,,OU-L2; noun,\n4,Health,2,la,pharmacie,pharmacy,La pharmacie est fermée.,,OU-L2; place,\n5,Food,3,le,fromage,cheese,J'adore le fromage français.,,OU-L3; noun,`;
+  // ----------------- startup -----------------
+  document.addEventListener('DOMContentLoaded',()=>{
+    const saved=localStorage.getItem('flashcards::lastSrc');
+    if(saved) d('csvUrl').value=saved;
+    if(d('csvUrl').value) loadCsv(d('csvUrl').value);
+  });
 
-  // Load demo immediately
-  (function initDemo(){
-    const blob = new Blob([demoCSV],{type:'text/csv'}); const url = URL.createObjectURL(blob);
-    d('csvUrl').value = url; loadCsv(url);
-  })();
-
+  // Demo data intentionally removed (per request)
   </script>
 </body>
 </html>
