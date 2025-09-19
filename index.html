@@ -38,6 +38,11 @@
       </div>
 
       <div class="field">
+        <label>Label</label>
+        <select id="labelFilter"><option value="">All labels</option></select>
+      </div>
+
+      <div class="field">
         <label>Search</label>
         <input id="search" type="text" placeholder="e.g. pain, breakfast, OU-L2" />
       </div>
@@ -53,12 +58,6 @@
       <div class="field">
         <button class="btn secondary" id="resetBtn" title="Clear progress">Reset progress</button>
       </div>
-
-      <p class="hint">
-        Headers: <strong>id</strong>, <strong>deck</strong>, <strong>lesson</strong>, <strong>article</strong>,
-        <strong>french</strong>, <strong>english</strong>, <strong>sentence</strong>,
-        <strong>pron</strong>, <strong>tags</strong>, <strong>notes</strong>, <strong>labels</strong>
-      </p>
     </aside>
 
     <main class="stageWrap">
@@ -100,8 +99,6 @@
     </main>
   </div>
 
-<!-- at the end of <body> -->
-<script src="js/utils.js"></script>
-<script src="js/app.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
