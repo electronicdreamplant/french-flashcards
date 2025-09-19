@@ -28,14 +28,17 @@ select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-off
 .stage{display:flex;justify-content:center;align-items:flex-start}
 
 /* Card */
-.card{width:min(900px,92vw);min-height:260px;background:var(--card);border:2px solid var(--card-border);border-radius:6px;box-shadow:0 4px 10px rgba(0,0,0,.08);padding:18px;position:relative}
+.card{width:min(900px,92vw);min-height:260px;background:var(--card);border:2px solid var(--card-border);border-radius:6px;box-shadow:0 4px 10px rgba(0,0,0,.08);padding:18px;position:relative;cursor:pointer}
 .meta{position:absolute;top:12px;left:16px;font-size:16px;color:#1f1f1f}
 .front .term{font-size:48px;line-height:1.1;font-weight:700;margin-top:34px}
 .front .article{margin-right:.4rem}
 .pron{font-size:18px;color:#1f1f1f;margin-top:6px}
 .tags{margin-top:10px}
 .tag{display:inline-block;background:#f3f2f1;border:1px solid var(--border);padding:2px 8px;margin-right:6px;font-size:16px}
-.back .answer{font-size:38px;font-weight:700;margin-top:34px}
+
+/* Make back term same size as front (your request) */
+.back .answer{font-size:48px;line-height:1.1;font-weight:700;margin-top:34px}
+
 .sentence{font-size:20px;margin-top:10px}
 .notes{margin-top:8px;color:#1f1f1f;font-size:18px}
 
