@@ -7,59 +7,72 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <!-- Header with hamburger (mobile only) -->
+  <header class="topbar">
+    <button id="menuBtn" class="hamburger" aria-label="Open filters" aria-expanded="false" aria-controls="side">
+      ☰
+    </button>
+    <h1 class="brand">French Vocab Flashcards</h1>
+  </header>
+
+  <!-- Click scrim to close menu on mobile -->
+  <div id="scrim" class="scrim" hidden></div>
+
   <div class="app">
-    <aside class="side">
-      <h1>French Vocab Flashcards</h1>
-
-      <div class="field">
-        <label>Direction</label>
-        <div class="seg" id="dirSeg">
-          <button data-dir="fr-en" class="active">FR → EN</button>
-          <button data-dir="en-fr">EN → FR</button>
+    <!-- SIDEBAR: filters & controls -->
+    <aside class="side" id="side">
+      <div class="side-inner">
+        <div class="field">
+          <label>Direction</label>
+          <div class="seg" id="dirSeg">
+            <button data-dir="fr-en" class="active">FR → EN</button>
+            <button data-dir="en-fr">EN → FR</button>
+          </div>
         </div>
-      </div>
 
-      <div class="field">
-        <label>Study</label>
-        <select id="studyMode">
-          <option value="due">Due today</option>
-          <option value="all">All filtered</option>
-        </select>
-      </div>
+        <div class="field">
+          <label>Study</label>
+          <select id="studyMode">
+            <option value="due">Due today</option>
+            <option value="all">All filtered</option>
+          </select>
+        </div>
 
-      <div class="field">
-        <label>Deck</label>
-        <select id="deckFilter"><option value="">All decks</option></select>
-      </div>
+        <div class="field">
+          <label>Deck</label>
+          <select id="deckFilter"><option value="">All decks</option></select>
+        </div>
 
-      <div class="field">
-        <label>Lesson</label>
-        <select id="lessonFilter"><option value="">All</option></select>
-      </div>
+        <div class="field">
+          <label>Lesson</label>
+          <select id="lessonFilter"><option value="">All</option></select>
+        </div>
 
-      <div class="field">
-        <label>Label</label>
-        <select id="labelFilter"><option value="">All labels</option></select>
-      </div>
+        <div class="field">
+          <label>Label</label>
+          <select id="labelFilter"><option value="">All labels</option></select>
+        </div>
 
-      <div class="field">
-        <label>Search</label>
-        <input id="search" type="text" placeholder="e.g. pain, breakfast, OU-L2" />
-      </div>
+        <div class="field">
+          <label>Search</label>
+          <input id="search" type="text" placeholder="e.g. pain, breakfast, OU-L2" />
+        </div>
 
-      <div class="field">
-        <label>Shuffle</label>
-        <select id="shuffle">
-          <option value="yes">Yes</option>
-          <option value="no">No</option>
-        </select>
-      </div>
+        <div class="field">
+          <label>Shuffle</label>
+          <select id="shuffle">
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+        </div>
 
-      <div class="field">
-        <button class="btn secondary" id="resetBtn" title="Clear progress">Reset progress</button>
+        <div class="field">
+          <button class="btn secondary" id="resetBtn" title="Clear progress">Reset progress</button>
+        </div>
       </div>
     </aside>
 
+    <!-- MAIN -->
     <main class="stageWrap">
       <div class="stats" id="stats">Loading…</div>
 
@@ -86,11 +99,14 @@
         </div>
       </div>
 
+      <!-- ACTIONS: now includes Prev / Next (touch friendly) -->
       <div class="actions" id="actions" style="display:none">
+        <button class="btn subtle" id="prevBtn" title="Previous">Prev</button>
         <button class="btn again" id="againBtn" title="1 or A">Again</button>
         <button class="btn good"  id="goodBtn"  title="2 or G">Good</button>
         <button class="btn easy"  id="easyBtn"  title="3 or E">Easy</button>
         <button class="btn"       id="flipBtn"  title="Space">Flip</button>
+        <button class="btn subtle" id="nextBtn" title="Next">Next</button>
       </div>
 
       <div class="empty" id="empty">
