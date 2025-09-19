@@ -1,1 +1,57 @@
-here
+:root{
+  --page:#ffffff; --ink:#0b0c0c; --muted:#505a5f; --border:#b1b4b6; --focus:#fd0;
+  --card:#ffeb3b; --card-border:#e0c44f;
+}
+
+html{box-sizing:border-box}
+*,*:before,*:after{box-sizing:inherit}
+html,body{height:100%}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#fff;color:var(--ink);font-size:19px;line-height:1.5}
+
+/* Layout */
+.app{display:grid;grid-template-columns:360px 1fr;min-height:100vh}
+@media(max-width:960px){.app{grid-template-columns:1fr}}
+
+.side{background:#fff;border-right:1px solid var(--border);padding:24px;position:sticky;top:0;height:100vh;overflow:auto}
+.side h1{font-size:28px;margin:0 0 16px}
+.field{margin:16px 0}
+.field label{display:block;font-weight:700;margin-bottom:6px}
+.hint{font-size:16px;color:var(--muted)}
+select,input[type="text"]{width:100%;border:2px solid var(--border);padding:10px 12px;border-radius:0;background:#fff;color:var(--ink);font-size:19px}
+select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-offset:0}
+
+.btn{appearance:none;border:2px solid #0b0c0c;background:#0b0c0c;color:#fff;padding:10px 16px;font-weight:700;cursor:pointer;border-radius:0}
+.btn.secondary{background:#fff;color:#0b0c0c}
+
+.stageWrap{padding:24px}
+.stats{font-size:16px;color:var(--muted);text-align:right;margin-bottom:8px}
+.stage{display:flex;justify-content:center;align-items:flex-start}
+
+/* Card */
+.card{width:min(900px,92vw);min-height:260px;background:var(--card);border:2px solid var(--card-border);border-radius:6px;box-shadow:0 4px 10px rgba(0,0,0,.08);padding:18px;position:relative}
+.meta{position:absolute;top:12px;left:16px;font-size:16px;color:#1f1f1f}
+.front .term{font-size:48px;line-height:1.1;font-weight:700;margin-top:34px}
+.front .article{margin-right:.4rem}
+.pron{font-size:18px;color:#1f1f1f;margin-top:6px}
+.tags{margin-top:10px}
+.tag{display:inline-block;background:#f3f2f1;border:1px solid var(--border);padding:2px 8px;margin-right:6px;font-size:16px}
+.back .answer{font-size:38px;font-weight:700;margin-top:34px}
+.sentence{font-size:20px;margin-top:10px}
+.notes{margin-top:8px;color:#1f1f1f;font-size:18px}
+
+.actions{position:sticky;bottom:0;display:flex;gap:10px;justify-content:center;margin-top:16px;padding:10px 0;background:transparent}
+.btn.again{background:#d4351c;border-color:#d4351c}
+.btn.good{background:#00703c;border-color:#00703c}
+.btn.easy{background:#1d70b8;border-color:#1d70b8}
+
+.empty{color:var(--muted);text-align:center;margin-top:12px}
+
+/* Segmented switch */
+.seg{display:inline-flex;border:2px solid var(--border)}
+.seg button{border:0;background:#fff;padding:10px 12px;font-size:19px;cursor:pointer}
+.seg button.active{background:#0b0c0c;color:#fff}
+
+/* Flip handling */
+.back{display:none}
+.card.flipped .front{display:none}
+.card.flipped .back{display:block}
