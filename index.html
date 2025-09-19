@@ -59,17 +59,11 @@
   </header>
   <div class="container">
 
-<div class="controls">
-  <div class="md">
-    <label>Data source (CSV URL)</label>
-    <input 
-      id="csvUrl" 
-      type="text" 
-      value="https://docs.google.com/spreadsheets/d/e/2PACX-1vTm0yTZkHyweym1ITZbZGg2AJJByj35kMoCXggEwDuRwFwtLNqyhuEaZsNBS_fzbDseq8f8lrnYI3MU/pub?gid=0&single=true&output=csv" 
-      placeholder="csvfile" 
-    />
-  </div>
-</div>
+    <div class="controls">
+      <div class="md">
+        <label>Data source (CSV URL)</label>
+        <input id="csvUrl" type="text" placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv" />
+      </div>
       <div class="md">
         <label>Deck</label>
         <select id="deckFilter"><option value="">All decks</option></select>
@@ -318,8 +312,7 @@
     if(e.key==='ArrowLeft'){ nextCard(-1); }
   });
 
-  /*
-    // Optional: demo data so you can play immediately. Remove if you want.
+  // Optional: demo data so you can play immediately. Remove if you want.
   const demoCSV = `id,deck,lesson,article,french,english,sentence,pron,tags,notes\n1,Food,1,le,pain,bread,Je mange du pain le matin.,,OU-L1; noun,\n2,Food,1,la,pomme,apple,La pomme est rouge.,,OU-L1; noun,\n3,Travel,2,le,train,train,Nous prenons le train à 9h.,,OU-L2; noun,\n4,Health,2,la,pharmacie,pharmacy,La pharmacie est fermée.,,OU-L2; place,\n5,Food,3,le,fromage,cheese,J'adore le fromage français.,,OU-L3; noun,`;
 
   // Load demo immediately
@@ -327,7 +320,6 @@
     const blob = new Blob([demoCSV],{type:'text/csv'}); const url = URL.createObjectURL(blob);
     d('csvUrl').value = url; loadCsv(url);
   })();
-  */
 
   </script>
 </body>
