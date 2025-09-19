@@ -12,10 +12,10 @@ const state = {
   today: new Date().toISOString().slice(0,10),
   progress: {},
   direction: "fr-en",   // or "en-fr"
-  showSentence: false,  // controls click-to-reveal (French side only)
+  showSentence: false,  // click-to-reveal (French side only)
 };
 
-// ---------- CSV parsing (kept local to this file) ----------
+// ---------- CSV parsing ----------
 function parseCSV(text){
   const out=[], row=[], pushRow=()=>{ out.push(row.splice(0)); };
   let i=0, field='', inQ=false; const pushField=()=>{ row.push(field); field=''; };
@@ -59,7 +59,7 @@ const key = ()=> 'flashcards::' + state.src;
 const saveProgress = ()=> localStorage.setItem(key(), JSON.stringify(state.progress));
 const loadProgress = ()=> state.progress = JSON.parse(localStorage.getItem(key()) || '{}');
 
-// ---------- scheduling (Leitner, unchanged) ----------
+// ---------- scheduling (Leitner) ----------
 const SCHED = {1:0, 2:1, 3:2, 4:4, 5:7};
 const nextDate = (from,days)=>{ const dt=new Date(from); dt.setDate(dt.getDate()+days); return dt.toISOString().slice(0,10); };
 const ensure = id => { if(!state.progress[id]) state.progress[id] = {box:1, due:state.today}; };
@@ -86,6 +86,13 @@ function frenchVisible() {
          (state.direction === 'en-fr' &&  flipped);
 }
 
+// Always show front side and hide sentence
+function resetToFront() {
+  const cardEl = d('card');
+  if (cardEl) cardEl.classList.remove('flipped');
+  state.showSentence = false;
+}
+
 // ---------- filtering ----------
 function filter(){
   const deck   = d('deckFilter').value.toLowerCase();
@@ -109,7 +116,7 @@ function filter(){
 
   state.queue = rows;
   state.idx = 0;
-  state.showSentence = false;   // hide sentence when list changes
+  resetToFront();   // ensure correct side after filtering
   stats();
   render();
 }
@@ -159,10 +166,11 @@ function render(){
     .map(t => `<span class="tag">${t}</span>`).join(' ');
 }
 
+// Next/Prev — always start new card on front
 const next = step => {
-  if(!state.queue.length) return;
-  state.idx = (state.idx + (step||1) + state.queue.length) % state.queue.length;
-  state.showSentence = false; // hide sentence on next/prev
+  if (!state.queue.length) return;
+  state.idx = (state.idx + (step || 1) + state.queue.length) % state.queue.length;
+  resetToFront();
   render();
 };
 
@@ -192,7 +200,7 @@ d('resetBtn').addEventListener('click', ()=>{
   if(confirm('Reset progress for this source?')){
     localStorage.removeItem('flashcards::'+state.src);
     state.progress = {};
-    state.showSentence = false;
+    resetToFront();
     filter();
   }
 });
@@ -208,7 +216,7 @@ d('flipBtn').addEventListener('click', ()=>{
 
 // Click-to-reveal sentence (French side only)
 d('card').addEventListener('click', (e)=>{
-  // Ignore clicks that start on buttons in the actions bar
+  // Ignore clicks on the bottom actions bar
   if (e.target.closest('.actions')) return;
   if (frenchVisible()) {
     state.showSentence = !state.showSentence;
@@ -218,7 +226,12 @@ d('card').addEventListener('click', (e)=>{
 
 // Keyboard shortcuts
 window.addEventListener('keydown', e=>{
-  if(e.key===' '){ e.preventDefault(); d('card').classList.toggle('flipped'); state.showSentence=false; render(); }
+  if(e.key===' '){
+    e.preventDefault();
+    d('card').classList.toggle('flipped');
+    state.showSentence = false;  // hide sentence on flip
+    render();
+  }
   if(e.key==='ArrowRight') next(1);
   if(e.key==='ArrowLeft')  next(-1);
   if(e.key==='1'||e.key.toLowerCase()==='a') grade('again');
@@ -226,14 +239,19 @@ window.addEventListener('keydown', e=>{
   if(e.key==='3'||e.key.toLowerCase()==='e') grade('easy');
 });
 
-// Direction segmented control
+// Direction segmented control — reset & auto-refresh
 document.getElementById('dirSeg').addEventListener('click', e=>{
-  const b = e.target.closest('button'); if(!b) return;
-  [...document.querySelectorAll('#dirSeg button')].forEach(x=>x.classList.remove('active'));
+  const b = e.target.closest('button');
+  if (!b) return;
+
+  // update active state
+  [...document.querySelectorAll('#dirSeg button')].forEach(x => x.classList.remove('active'));
   b.classList.add('active');
-  state.direction = b.dataset.dir;
-  state.showSentence = false; // hide when switching direction
-  render();
+
+  // set direction and reset to front
+  state.direction = b.dataset.dir;   // "fr-en" or "en-fr"
+  resetToFront();
+  render();                          // auto-refresh view
 });
 
 // ---------- startup ----------
