@@ -1,5 +1,3 @@
-import { parseCSV, mapHeaders } from './utils.js';
-
 // ---- CONFIG ----
 const DEFAULT_SRC =
   'https://docs.google.com/spreadsheets/d/e/2PACX-1vTm0yTZkHyweym1ITZbZGg2AJJByj35kMoCXggEwDuRwFwtLNqyhuEaZsNBS_fzbDseq8f8lrnYI3MU/pub?gid=0&single=true&output=csv';
