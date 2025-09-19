@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <!-- Header with hamburger (mobile only) -->
+  <!-- Top bar (now visible on desktop too) -->
   <header class="topbar">
     <button id="menuBtn" class="hamburger" aria-label="Open filters" aria-expanded="false" aria-controls="side">
       ☰
@@ -15,11 +15,11 @@
     <h1 class="brand">French Vocab Flashcards</h1>
   </header>
 
-  <!-- Click scrim to close menu on mobile -->
+  <!-- Scrim for mobile menu -->
   <div id="scrim" class="scrim" hidden></div>
 
   <div class="app">
-    <!-- SIDEBAR: filters & controls -->
+    <!-- SIDEBAR -->
     <aside class="side" id="side">
       <div class="side-inner">
         <div class="field">
@@ -99,14 +99,18 @@
         </div>
       </div>
 
-      <!-- ACTIONS: now includes Prev / Next (touch friendly) -->
+      <!-- ACTIONS: 2 rows now -->
       <div class="actions" id="actions" style="display:none">
-        <button class="btn subtle" id="prevBtn" title="Previous">Prev</button>
-        <button class="btn again" id="againBtn" title="1 or A">Again</button>
-        <button class="btn good"  id="goodBtn"  title="2 or G">Good</button>
-        <button class="btn easy"  id="easyBtn"  title="3 or E">Easy</button>
-        <button class="btn"       id="flipBtn"  title="Space">Flip</button>
-        <button class="btn subtle" id="nextBtn" title="Next">Next</button>
+        <div class="actions-primary">
+          <button class="btn again" id="againBtn" title="1 or A">Again</button>
+          <button class="btn good"  id="goodBtn"  title="2 or G">Good</button>
+          <button class="btn easy"  id="easyBtn"  title="3 or E">Easy</button>
+          <button class="btn"       id="flipBtn"  title="Space">Flip</button>
+        </div>
+        <div class="actions-nav">
+          <button class="btn subtle" id="prevBtn" title="Previous">&laquo; Prev</button>
+          <button class="btn subtle" id="nextBtn" title="Next">Next &raquo;</button>
+        </div>
       </div>
 
       <div class="empty" id="empty">
