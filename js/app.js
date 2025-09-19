@@ -50,7 +50,7 @@ function mapHeaders(rows){
     pron:     (r[idx('pron')]     || '').trim(),
     tags:     (r[idx('tags')]     || '').trim(),
     notes:    (r[idx('notes')]    || '').trim(),
-    labels:   (r[idx('labels')]   || '').trim(),   // <- labels supported
+    labels:   (r[idx('labels')]   || '').trim(),
   })).filter(x => x.french || x.english);
 }
 
@@ -92,20 +92,20 @@ function resetToFront() {
 function filter(){
   const deck   = d('deckFilter').value.toLowerCase();
   const lesson = d('lessonFilter').value.toLowerCase();
-  const label  = d('labelFilter').value.toLowerCase();   // NEW
+  const label  = (d('labelFilter')?.value || '').toLowerCase();
   const q      = d('search').value.toLowerCase();
 
   let rows = state.rows.filter(r => {
     const labelsArr = (r.labels || '')
       .toLowerCase()
-      .split(/[;,]+/)            // support "a;b;c" or "a,b,c"
+      .split(/[;,]+/)
       .map(s => s.trim())
       .filter(Boolean);
 
     return (!deck   || r.deck.toLowerCase()   === deck) &&
            (!lesson || r.lesson.toLowerCase() === lesson) &&
            (!label  || labelsArr.includes(label)) &&
-           (!q || (r.french + ' ' + r.english + ' ' + r.sentence + ' ' + r.tags).toLowerCase().includes(q)); // search unchanged
+           (!q || (r.french + ' ' + r.english + ' ' + r.sentence + ' ' + r.tags).toLowerCase().includes(q));
   });
 
   loadProgress();
@@ -130,6 +130,7 @@ function stats(){
 
 // ---------- render ----------
 function render(){
+  // Keep 'showSentence' only if French is currently visible
   state.showSentence = state.showSentence && frenchVisible();
 
   const card    = d('card'), actions = d('actions'), empty = d('empty');
@@ -139,7 +140,6 @@ function render(){
   empty.style.display='none'; actions.style.display='flex'; card.style.display='block';
 
   d('meta').textContent = c.labels || '';
-
   const fr = ((c.article ? c.article + ' ' : '') + (c.french || '')).trim();
 
   if (state.direction === 'fr-en') {
@@ -199,7 +199,7 @@ function populate(){
   const lessons = [...new Set(state.rows.map(r=>r.lesson).filter(Boolean))].sort((a,b)=>isNaN(a)-isNaN(b)||a-b);
   d('lessonFilter').innerHTML = '<option value="">All</option>' + lessons.map(x=>`<option>${x}</option>`).join('');
 
-  // Labels (support multiple labels per card; split on ; or ,)
+  // Labels
   const labelTokens = new Set();
   state.rows.forEach(r=>{
     (r.labels || '').split(/[;,]+/).forEach(tok=>{
@@ -208,7 +208,8 @@ function populate(){
     });
   });
   const labels = [...labelTokens].sort((a,b)=> a.localeCompare(b, undefined, {sensitivity:'base'}));
-  d('labelFilter').innerHTML = '<option value="">All labels</option>' + labels.map(x=>`<option>${x}</option>`).join('');
+  const labelSel = document.getElementById('labelFilter');
+  if (labelSel) labelSel.innerHTML = '<option value="">All labels</option>' + labels.map(x=>`<option>${x}</option>`).join('');
 }
 
 // ---------- events ----------
@@ -220,16 +221,26 @@ d('resetBtn').addEventListener('click', ()=>{
     filter();
   }
 });
-['deckFilter','lessonFilter','labelFilter','studyMode','shuffle'].forEach(id=> d(id).addEventListener('change', filter));
+['deckFilter','lessonFilter','labelFilter','studyMode','shuffle'].forEach(id=> {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('change', filter);
+});
 d('search').addEventListener('input', filter);
 
+// Flip
 d('flipBtn').addEventListener('click', ()=>{
   d('card').classList.toggle('flipped');
-  state.showSentence = false;
+  state.showSentence = false; // hide when flipping
   render();
 });
 
+// Prev / Next (touch-friendly)
+document.getElementById('prevBtn').addEventListener('click', ()=> next(-1));
+document.getElementById('nextBtn').addEventListener('click', ()=> next(1));
+
+// Click-to-reveal sentence (French side only)
 d('card').addEventListener('click', (e)=>{
+  // Ignore clicks on the bottom actions bar
   if (e.target.closest('.actions')) return;
   if (frenchVisible()) {
     state.showSentence = !state.showSentence;
@@ -237,6 +248,7 @@ d('card').addEventListener('click', (e)=>{
   }
 });
 
+// Keyboard shortcuts (desktop still supported)
 window.addEventListener('keydown', e=>{
   if(e.key===' '){
     e.preventDefault();
@@ -251,6 +263,7 @@ window.addEventListener('keydown', e=>{
   if(e.key==='3'||e.key.toLowerCase()==='e') grade('easy');
 });
 
+// Direction segmented control
 document.getElementById('dirSeg').addEventListener('click', e=>{
   const b = e.target.closest('button');
   if (!b) return;
@@ -260,6 +273,15 @@ document.getElementById('dirSeg').addEventListener('click', e=>{
   resetToFront();
   render();
 });
+
+// ------- Mobile menu (hamburger) -------
+const menuBtn = document.getElementById('menuBtn');
+const scrim = document.getElementById('scrim');
+function openMenu(){ document.body.classList.add('menu-open'); menuBtn.setAttribute('aria-expanded','true'); scrim.hidden=false; }
+function closeMenu(){ document.body.classList.remove('menu-open'); menuBtn.setAttribute('aria-expanded','false'); scrim.hidden=true; }
+menuBtn?.addEventListener('click', ()=> (document.body.classList.contains('menu-open') ? closeMenu() : openMenu()));
+scrim?.addEventListener('click', closeMenu);
+window.addEventListener('keydown', e=> { if(e.key==='Escape') closeMenu(); });
 
 // ---------- startup ----------
 document.addEventListener('DOMContentLoaded', ()=> loadCsv(state.src));
