@@ -312,7 +312,8 @@
     if(e.key==='ArrowLeft'){ nextCard(-1); }
   });
 
-  // Optional: demo data so you can play immediately. Remove if you want.
+  /*
+    // Optional: demo data so you can play immediately. Remove if you want.
   const demoCSV = `id,deck,lesson,article,french,english,sentence,pron,tags,notes\n1,Food,1,le,pain,bread,Je mange du pain le matin.,,OU-L1; noun,\n2,Food,1,la,pomme,apple,La pomme est rouge.,,OU-L1; noun,\n3,Travel,2,le,train,train,Nous prenons le train à 9h.,,OU-L2; noun,\n4,Health,2,la,pharmacie,pharmacy,La pharmacie est fermée.,,OU-L2; place,\n5,Food,3,le,fromage,cheese,J'adore le fromage français.,,OU-L3; noun,`;
 
   // Load demo immediately
@@ -320,6 +321,7 @@
     const blob = new Blob([demoCSV],{type:'text/csv'}); const url = URL.createObjectURL(blob);
     d('csvUrl').value = url; loadCsv(url);
   })();
+  */
 
   </script>
 </body>
