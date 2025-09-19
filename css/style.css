@@ -79,7 +79,7 @@ select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-off
 .stats{font-size:16px;color:var(--muted);text-align:right;margin-bottom:8px}
 .stage{display:flex;justify-content:center;align-items:flex-start}
 
-/* Card — fixed consistent size, centred content */
+/* Card — fixed consistent size, centred vertically, LEFT aligned text */
 .card{
   width:min(900px,92vw);
   min-height:280px;                /* desktop baseline */
@@ -87,23 +87,27 @@ select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-off
   border:2px solid var(--card-border);
   border-radius:6px;
   box-shadow:0 4px 10px rgba(0,0,0,.08);
-  padding:18px;
+  padding:24px;                    /* more inner padding to avoid crowding */
   position:relative;
   cursor:pointer;
 
   display:flex;
   flex-direction:column;
-  justify-content:center;
+  justify-content:center;          /* vertical centring */
 }
 .front, .back{
   display:flex;
   flex-direction:column;
   justify-content:center;
-  align-items:center;
+  align-items:flex-start;          /* LEFT aligned */
+  text-align:left;                 /* LEFT aligned */
 }
-.meta{position:absolute;top:12px;left:16px;font-size:16px;color:#1f1f1f}
+.meta{
+  position:absolute;top:10px;left:16px;
+  font-size:16px;color:#1f1f1f
+}
 
-/* Big headline text */
+/* Big headline text (left aligned, no top margin) */
 .front .term,
 .back .answer{
   font-size:48px;
@@ -117,7 +121,7 @@ select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-off
 .tags{margin-top:10px}
 .tag{display:inline-block;background:#f3f2f1;border:1px solid var(--border);padding:2px 8px;margin-right:6px;font-size:16px}
 
-.sentence{font-size:20px;margin-top:10px;text-align:center}
+.sentence{font-size:20px;margin-top:10px;text-align:left}
 .notes{margin-top:8px;color:#1f1f1f;font-size:18px}
 
 /* Actions — two rows */
@@ -138,8 +142,9 @@ select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-off
 /* ---------- Mobile adjustments ---------- */
 @media(max-width:640px){
   .card{
-    width:calc(100vw - 32px); /* full width with margin */
-    min-height:46vh;          /* consistent height on small screens */
+    width:calc(100vw - 32px);  /* full width with margin */
+    min-height:40vh;           /* a little shorter so it doesn’t feel empty */
+    padding:22px;              /* balanced inner padding on mobile */
   }
   .front .term,
   .back .answer{
@@ -147,10 +152,9 @@ select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-off
     line-height:1.2;
   }
   .sentence{font-size:18px}
-  .btn{
-    font-size:22px;
-    padding:14px 18px;
-  }
+  .meta{font-size:14px; top:8px}
+
+  .btn{ font-size:22px; padding:14px 18px; }
   .actions-primary .btn{min-width:110px}
   .actions-nav .btn{min-width:130px}
 }
