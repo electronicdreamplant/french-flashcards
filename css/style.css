@@ -8,7 +8,7 @@ html{box-sizing:border-box}
 html,body{height:100%}
 body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#fff;color:var(--ink);font-size:19px;line-height:1.5}
 
-/* ---------- Topbar (now visible on desktop) ---------- */
+/* ---------- Topbar ---------- */
 .topbar{
   position:sticky; top:0; z-index:60;
   background:#fff; border-bottom:1px solid var(--border);
@@ -50,7 +50,7 @@ select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-off
   body.menu-open .scrim{ display:block; }
 }
 
-/* ---------- Buttons (bigger; GDS-like interactions) ---------- */
+/* ---------- Buttons ---------- */
 .btn{
   appearance:none;border:2px solid #0b0c0c;background:#0b0c0c;color:#fff;
   padding:14px 22px;font-weight:700;cursor:pointer;border-radius:4px;
@@ -79,34 +79,48 @@ select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-off
 .stats{font-size:16px;color:var(--muted);text-align:right;margin-bottom:8px}
 .stage{display:flex;justify-content:center;align-items:flex-start}
 
-/* Card — fixed, consistent size and centred content */
+/* Card — fixed consistent size, centred content */
 .card{
-  width: min(900px, 92vw);
-  min-height: 280px;                 /* desktop baseline */
-  background: var(--card);
-  border: 2px solid var(--card-border);
-  border-radius: 6px;
-  box-shadow: 0 4px 10px rgba(0,0,0,.08);
-  padding: 18px;
-  position: relative;
-  cursor: pointer;
+  width:min(900px,92vw);
+  min-height:280px;                /* desktop baseline */
+  background:var(--card);
+  border:2px solid var(--card-border);
+  border-radius:6px;
+  box-shadow:0 4px 10px rgba(0,0,0,.08);
+  padding:18px;
+  position:relative;
+  cursor:pointer;
 
-  /* NEW: keep content centred regardless of text length */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.front, .back{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
 }
 .meta{position:absolute;top:12px;left:16px;font-size:16px;color:#1f1f1f}
-.front .term{font-size:48px;line-height:1.1;font-weight:700;margin-top:34px}
+
+/* Big headline text */
+.front .term,
+.back .answer{
+  font-size:48px;
+  line-height:1.1;
+  font-weight:700;
+  margin:0;
+  word-break:break-word;
+}
 .front .article{margin-right:.4rem}
 .pron{font-size:18px;color:#1f1f1f;margin-top:6px}
 .tags{margin-top:10px}
 .tag{display:inline-block;background:#f3f2f1;border:1px solid var(--border);padding:2px 8px;margin-right:6px;font-size:16px}
-.back .answer{font-size:48px;line-height:1.1;font-weight:700;margin-top:34px}
-.sentence{font-size:20px;margin-top:10px}
+
+.sentence{font-size:20px;margin-top:10px;text-align:center}
 .notes{margin-top:8px;color:#1f1f1f;font-size:18px}
 
-/* Actions (two rows) */
+/* Actions — two rows */
 .actions{position:sticky;bottom:0;display:flex;flex-direction:column;gap:12px;justify-content:center;margin-top:16px;padding:10px 0;background:transparent}
 .actions-primary{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
 .actions-primary .btn{min-width:110px}
@@ -121,30 +135,22 @@ select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-off
 .card.flipped .front{display:none}
 .card.flipped .back{display:block}
 
-/* Mobile button sizing (refined) */
-@media(max-width:640px){
-  .btn{ 
-    font-size:22px; 
-    padding:14px 18px;   /* smaller padding than before */
-  }
-  .actions-primary .btn{min-width:110px}
-  .actions-nav .btn{min-width:120px}
-}
-
-/* Balance card padding on mobile */
+/* ---------- Mobile adjustments ---------- */
 @media(max-width:640px){
   .card{
-    margin-left:16px;
-    margin-right:16px;
-    width:auto;       /* allow it to shrink naturally */
+    width:calc(100vw - 32px); /* full width with margin */
+    min-height:46vh;          /* consistent height on small screens */
   }
-}
-
-/* Adjust card text size for mobile */
-@media(max-width:640px){
   .front .term,
   .back .answer{
-    font-size:32px;   /* down from 48px */
+    font-size:32px;
+    line-height:1.2;
   }
   .sentence{font-size:18px}
+  .btn{
+    font-size:22px;
+    padding:14px 18px;
+  }
+  .actions-primary .btn{min-width:110px}
+  .actions-nav .btn{min-width:130px}
 }
