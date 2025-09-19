@@ -1,8 +1,8 @@
-// ---- CONFIG ----
+// ---------- configuration ----------
 const DEFAULT_SRC =
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTm0yTZkHyweym1ITZbZGg2AJJByj35kMoCXggEwDuRwFwtLNqyhuEaZsNBS_fzbDseq8f8lrnYI3MU/pub?gid=0&single=true&output=csv';
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTm0yTZkHyweym1ITZbZGg2AJJByj35kMoCXggEwDuRwFwtLNqyhuEaZsNBS_fzbDseq8f8lrnYI3MU/pub?gid=0&single=true&output=csv";
 
-// ---- STATE ----
+// ---------- state ----------
 const d = id => document.getElementById(id);
 const state = {
   src: DEFAULT_SRC,
@@ -11,32 +11,82 @@ const state = {
   idx: 0,
   today: new Date().toISOString().slice(0,10),
   progress: {},
-  direction: 'fr-en', // or 'en-fr'
+  direction: "fr-en",   // or "en-fr"
+  showSentence: false,  // controls click-to-reveal (French side only)
 };
 
-// ---- STORAGE ----
-const key = () => 'flashcards::' + state.src;
-const saveProgress = () => localStorage.setItem(key(), JSON.stringify(state.progress));
-const loadProgress = () => state.progress = JSON.parse(localStorage.getItem(key()) || '{}');
+// ---------- CSV parsing (kept local to this file) ----------
+function parseCSV(text){
+  const out=[], row=[], pushRow=()=>{ out.push(row.splice(0)); };
+  let i=0, field='', inQ=false; const pushField=()=>{ row.push(field); field=''; };
+  while(i<text.length){
+    const c=text[i];
+    if(inQ){
+      if(c==='"'){ if(text[i+1]==='"'){ field+='"'; i+=2; continue; } inQ=false; i++; }
+      else { field+=c; i++; }
+    } else {
+      if(c==='"'){ inQ=true; i++; }
+      else if(c===','){ pushField(); i++; }
+      else if(c==='\n' || c==='\r'){ pushField(); if(row.length) pushRow(); i++; if(c==='\r' && text[i]==='\n') i++; }
+      else { field+=c; i++; }
+    }
+  }
+  if(field!==''||row.length){ pushField(); pushRow(); }
+  return out;
+}
 
-// ---- SCHEDULING (Leitner) ----
-const SCHED = {1:0, 2:1, 3:2, 4:4, 5:7}; // keep as-is per your preference
-const nextDate = (from,days) => { const dt = new Date(from); dt.setDate(dt.getDate()+days); return dt.toISOString().slice(0,10); };
+function mapHeaders(rows){
+  if(!rows.length) return [];
+  const header = rows[0].map(h=> (h||'').trim().toLowerCase());
+  const idx = n => header.indexOf(n);
+  return rows.slice(1).map((r,ix)=>({
+    id:       r[idx('id')]        || String(ix+1),
+    deck:     (r[idx('deck')]     || '').trim(),
+    lesson:   (r[idx('lesson')]   || '').trim(),
+    article:  (r[idx('article')]  || '').trim(),
+    french:   (r[idx('french')]   || '').trim(),
+    english:  (r[idx('english')]  || '').trim(),
+    sentence: (r[idx('sentence')] || '').trim(),
+    pron:     (r[idx('pron')]     || '').trim(),
+    tags:     (r[idx('tags')]     || '').trim(),
+    notes:    (r[idx('notes')]    || '').trim(),
+    labels:   (r[idx('labels')]   || '').trim(),
+  })).filter(x => x.french || x.english);
+}
+
+// ---------- storage ----------
+const key = ()=> 'flashcards::' + state.src;
+const saveProgress = ()=> localStorage.setItem(key(), JSON.stringify(state.progress));
+const loadProgress = ()=> state.progress = JSON.parse(localStorage.getItem(key()) || '{}');
+
+// ---------- scheduling (Leitner, unchanged) ----------
+const SCHED = {1:0, 2:1, 3:2, 4:4, 5:7};
+const nextDate = (from,days)=>{ const dt=new Date(from); dt.setDate(dt.getDate()+days); return dt.toISOString().slice(0,10); };
 const ensure = id => { if(!state.progress[id]) state.progress[id] = {box:1, due:state.today}; };
 
 function grade(which){
   const c = state.queue[state.idx]; if(!c) return;
   ensure(c.id);
   const p = state.progress[c.id];
-  if(which === 'again') p.box = 1;
-  if(which === 'good')  p.box = Math.min(5, p.box + 1);
-  if(which === 'easy')  p.box = Math.min(5, p.box + 2);
+  if(which==='again') p.box = 1;
+  if(which==='good')  p.box = Math.min(5, p.box+1);
+  if(which==='easy')  p.box = Math.min(5, p.box+2);
   p.due = nextDate(state.today, SCHED[p.box]);
   saveProgress();
   next(1);
 }
 
-// ---- FILTERING ----
+// ---------- helpers ----------
+function frenchVisible() {
+  // French side is visible if:
+  // - FR→EN and card is NOT flipped, or
+  // - EN→FR and card IS flipped
+  const flipped = d('card').classList.contains('flipped');
+  return (state.direction === 'fr-en' && !flipped) ||
+         (state.direction === 'en-fr' &&  flipped);
+}
+
+// ---------- filtering ----------
 function filter(){
   const deck   = d('deckFilter').value.toLowerCase();
   const lesson = d('lessonFilter').value.toLowerCase();
@@ -59,6 +109,7 @@ function filter(){
 
   state.queue = rows;
   state.idx = 0;
+  state.showSentence = false;   // hide sentence when list changes
   stats();
   render();
 }
@@ -67,16 +118,20 @@ function stats(){
   d('stats').textContent = `${state.queue.length} cards · ${d('studyMode').value==='due' ? 'due today' : 'in view'}`;
 }
 
-// ---- RENDER (fix: sentence only on French side) ----
+// ---------- render ----------
 function render(){
+  // Keep 'showSentence' only if French is currently visible
+  state.showSentence = state.showSentence && frenchVisible();
+
   const card    = d('card'), actions = d('actions'), empty = d('empty');
   const c = state.queue[state.idx];
   if(!c){ card.style.display='none'; actions.style.display='none'; empty.style.display='block'; return; }
+
   empty.style.display='none'; actions.style.display='flex'; card.style.display='block';
 
   d('meta').textContent = c.labels || '';
 
-  const fr = (c.article ? c.article + ' ' : '') + (c.french || '');
+  const fr = ((c.article ? c.article + ' ' : '') + (c.french || '')).trim();
 
   if (state.direction === 'fr-en') {
     // FRONT = French, BACK = English
@@ -84,16 +139,18 @@ function render(){
     d('term').textContent    = c.french  || '';
     d('pron').textContent    = c.pron    || '';
     d('answer').textContent  = c.english || '';
-    d('sentenceFront').textContent = c.sentence || '';
+
+    d('sentenceFront').textContent = (state.showSentence && frenchVisible()) ? (c.sentence || '') : '';
     d('sentenceBack').textContent  = '';
   } else {
     // FRONT = English, BACK = French
     d('article').textContent = '';
     d('term').textContent    = c.english || '';
     d('pron').textContent    = '';
-    d('answer').textContent  = fr.trim();
+    d('answer').textContent  = fr;
+
     d('sentenceFront').textContent = '';
-    d('sentenceBack').textContent  = c.sentence || '';
+    d('sentenceBack').textContent  = (state.showSentence && frenchVisible()) ? (c.sentence || '') : '';
   }
 
   d('notes').textContent = c.notes || '';
@@ -102,9 +159,14 @@ function render(){
     .map(t => `<span class="tag">${t}</span>`).join(' ');
 }
 
-const next = step => { if(!state.queue.length) return; state.idx = (state.idx + (step||1) + state.queue.length) % state.queue.length; render(); };
+const next = step => {
+  if(!state.queue.length) return;
+  state.idx = (state.idx + (step||1) + state.queue.length) % state.queue.length;
+  state.showSentence = false; // hide sentence on next/prev
+  render();
+};
 
-// ---- LOAD ----
+// ---------- load ----------
 async function loadCsv(url){
   try{
     const res = await fetch(url, { headers: { 'Cache-Control':'no-cache' } });
@@ -125,35 +187,54 @@ function populate(){
   d('lessonFilter').innerHTML = '<option value="">All</option>'      + lessons.map(x=>`<option>${x}</option>`).join('');
 }
 
-// ---- EVENTS ----
+// ---------- events ----------
 d('resetBtn').addEventListener('click', ()=>{
   if(confirm('Reset progress for this source?')){
     localStorage.removeItem('flashcards::'+state.src);
     state.progress = {};
+    state.showSentence = false;
     filter();
   }
 });
-['deckFilter','lessonFilter','studyMode','shuffle'].forEach(id => d(id).addEventListener('change', filter));
+['deckFilter','lessonFilter','studyMode','shuffle'].forEach(id=> d(id).addEventListener('change', filter));
 d('search').addEventListener('input', filter);
-d('flipBtn').addEventListener('click', ()=> d('card').classList.toggle('flipped'));
-d('againBtn').addEventListener('click', ()=> grade('again'));
-d('goodBtn').addEventListener('click',  ()=> grade('good'));
-d('easyBtn').addEventListener('click',  ()=> grade('easy'));
+
+// Flip button (space also flips below)
+d('flipBtn').addEventListener('click', ()=>{
+  d('card').classList.toggle('flipped');
+  state.showSentence = false; // hide when flipping
+  render();
+});
+
+// Click-to-reveal sentence (French side only)
+d('card').addEventListener('click', (e)=>{
+  // Ignore clicks that start on buttons in the actions bar
+  if (e.target.closest('.actions')) return;
+  if (frenchVisible()) {
+    state.showSentence = !state.showSentence;
+    render();
+  }
+});
+
+// Keyboard shortcuts
 window.addEventListener('keydown', e=>{
-  if(e.key===' ') { e.preventDefault(); d('card').classList.toggle('flipped'); }
+  if(e.key===' '){ e.preventDefault(); d('card').classList.toggle('flipped'); state.showSentence=false; render(); }
   if(e.key==='ArrowRight') next(1);
   if(e.key==='ArrowLeft')  next(-1);
   if(e.key==='1'||e.key.toLowerCase()==='a') grade('again');
   if(e.key==='2'||e.key.toLowerCase()==='g') grade('good');
   if(e.key==='3'||e.key.toLowerCase()==='e') grade('easy');
 });
+
+// Direction segmented control
 document.getElementById('dirSeg').addEventListener('click', e=>{
   const b = e.target.closest('button'); if(!b) return;
   [...document.querySelectorAll('#dirSeg button')].forEach(x=>x.classList.remove('active'));
   b.classList.add('active');
   state.direction = b.dataset.dir;
+  state.showSentence = false; // hide when switching direction
   render();
 });
 
-// ---- STARTUP ----
+// ---------- startup ----------
 document.addEventListener('DOMContentLoaded', ()=> loadCsv(state.src));
