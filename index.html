@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -7,33 +7,34 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <!-- Top bar (now visible on desktop too) -->
-  <header class="topbar">
-    <button id="menuBtn" class="hamburger" aria-label="Open filters" aria-expanded="false" aria-controls="side">
-      ☰
-    </button>
-    <h1 class="brand">French Vocab Flashcards</h1>
-  </header>
 
-  <!-- Scrim for mobile menu -->
-  <div id="scrim" class="scrim" hidden></div>
+  <!-- Top bar -->
+  <div class="topbar">
+    <button id="hamburger" class="hamburger" aria-label="Open menu">☰</button>
+    <h1 class="brand">French Vocab Flashcards</h1>
+  </div>
+
+  <!-- Scrim for mobile drawer -->
+  <div class="scrim" aria-hidden="true" style="display:none"></div>
 
   <div class="app">
-    <!-- SIDEBAR -->
+    <!-- Sidebar / Controls -->
     <aside class="side" id="side">
       <div class="side-inner">
+
+        <!-- Add new vocab (Google Form) -->
         <div class="field">
-          <div class="field">
-  <a
-    href="https://docs.google.com/forms/d/e/1FAIpQLSeRvfDOrYGq_jO-tMI5CzBXGK9snclmythpLVIAbP92mB6e0g/viewform"
-    target="_blank"
-    rel="noopener"
-    class="btn add-vocab full"
-    aria-label="Open the Google Form to add new vocabulary"
-  >
-    + Add new vocab
-  </a>
-</div>
+          <a
+            href="https://docs.google.com/forms/d/e/1FAIpQLSeRvfDOrYGq_jO-tMI5CzBXGK9snclmythpLVIAbP92mB6e0g/viewform"
+            target="_blank"
+            rel="noopener"
+            class="btn add-vocab full"
+          >
+            + Add new vocab
+          </a>
+        </div>
+
+        <div class="field">
           <label>Direction</label>
           <div class="seg" id="dirSeg">
             <button data-dir="fr-en" class="active">FR → EN</button>
@@ -66,7 +67,7 @@
 
         <div class="field">
           <label>Search</label>
-          <input id="search" type="text" placeholder="e.g. pain, breakfast, OU-L2" />
+          <input id="search" type="text" placeholder="e.g. pain, breakfast, cognate" />
         </div>
 
         <div class="field">
@@ -78,35 +79,38 @@
         </div>
 
         <div class="field">
-          <button class="btn secondary" id="resetBtn" title="Clear progress">Reset progress</button>
+          <button class="btn secondary" id="resetBtn">Reset progress</button>
         </div>
+
       </div>
     </aside>
 
-    <!-- MAIN -->
+    <!-- Main / Card stage -->
     <main class="stageWrap">
       <div class="stats" id="stats">Loading…</div>
 
       <div class="stage">
         <div class="card" id="card" style="display:none">
+          <!-- top-left label (e.g., cognate) -->
           <div class="meta" id="meta"></div>
 
-          <!-- FRONT -->
-<div class="front" id="front">
-  <!-- Forvo link (top-right on the French side only) -->
-  <a id="forvoLink" class="forvo-link" target="_blank" rel="noopener" title="Hear this on Forvo">
-    <!-- Flat speaker icon (inline SVG) -->
-    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-      <path d="M19 5c1.5 2 1.5 12 0 14"></path>
-    </svg>
-  </a>
+          <!-- FRONT (French when FR→EN) -->
+          <div class="front" id="front">
+            <!-- Forvo icon link (top-right) -->
+            <a id="forvoLink" class="forvo-link" target="_blank" rel="noopener" title="Hear this on Forvo" aria-label="Hear this on Forvo">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M19 5c1.5 2 1.5 12 0 14"></path>
+              </svg>
+            </a>
 
-  <div class="term"><span class="article" id="article"></span><span id="term"></span></div>
-  <div class="pron" id="pron"></div>
-  <div class="sentence" id="sentenceFront"></div>
-  <div class="tags" id="tags"></div>
-</div>
+            <div class="term">
+              <span class="article" id="article"></span><span id="term"></span>
+            </div>
+            <div class="pron" id="pron"></div>
+            <div class="sentence" id="sentenceFront"></div>
+            <div class="tags" id="tags"></div>
+          </div>
 
           <!-- BACK -->
           <div class="back" id="back">
@@ -117,23 +121,21 @@
         </div>
       </div>
 
-      <!-- ACTIONS: 2 rows now -->
+      <!-- Actions -->
       <div class="actions" id="actions" style="display:none">
         <div class="actions-primary">
-          <button class="btn again" id="againBtn" title="1 or A">Again</button>
-          <button class="btn good"  id="goodBtn"  title="2 or G">Good</button>
-          <button class="btn easy"  id="easyBtn"  title="3 or E">Easy</button>
-          <button class="btn"       id="flipBtn"  title="Space">Flip</button>
+          <button class="btn again" id="againBtn" type="button">Again</button>
+          <button class="btn good" id="goodBtn" type="button">Good</button>
+          <button class="btn easy" id="easyBtn" type="button">Easy</button>
+          <button class="btn" id="flipBtn" type="button">Flip</button>
         </div>
         <div class="actions-nav">
-          <button class="btn subtle" id="prevBtn" title="Previous">&laquo; Prev</button>
-          <button class="btn subtle" id="nextBtn" title="Next">Next &raquo;</button>
+          <button class="btn" id="prevBtn" type="button">« Prev</button>
+          <button class="btn" id="nextBtn" type="button">Next »</button>
         </div>
       </div>
 
-      <div class="empty" id="empty">
-        No cards match your filters (or nothing due). Try Study → “All filtered”.
-      </div>
+      <div class="empty" id="empty">No cards match your filters.</div>
     </main>
   </div>
 
