@@ -179,3 +179,22 @@ select:focus,input:focus,button:focus{outline:3px solid var(--focus);outline-off
   .actions-primary .btn{min-width:110px}
   .actions-nav .btn{min-width:130px}
 }
+
+/* Forvo icon link (top-right of the card, French side only) */
+.forvo-link{
+  position:absolute;
+  top:12px;
+  right:12px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  color:#0b0c0c;
+  text-decoration:none;
+  opacity:.9;
+}
+.forvo-link:hover{ color:#1d70b8; opacity:1; }
+.forvo-link:focus{ outline:3px solid var(--focus); outline-offset:2px; }
+
+/* Ensure the card has enough headroom for label + icon */
+.card{ padding-top:56px; }
+@media(max-width:640px){ .card{ padding-top:48px; } }
