@@ -108,25 +108,24 @@ function grade(g) {
 function filter() {
   const deck   = (d("deckFilter")?.value || "").toLowerCase();
   const lesson = (d("lessonFilter")?.value || "").toLowerCase();
-  const label  = (d("labelFilter")?.value || "").toLowerCase();   // NEW
+  const label  = (d("labelFilter")?.value || "").toLowerCase();   // label filter
   const q      = (d("search")?.value || "").toLowerCase();
 
   let rows = state.rows.filter(r => {
     const okDeck   = !deck   || r.deck.toLowerCase()   === deck;
     const okLesson = !lesson || r.lesson.toLowerCase() === lesson;
 
-    // label match: tokenise r.labels by ; , | and trim   // NEW
     const rLabels = (r.labels || "")
       .toLowerCase()
       .split(/[;,|]/)
       .map(s => s.trim())
       .filter(Boolean);
-    const okLabel = !label || rLabels.includes(label);           // NEW
+    const okLabel = !label || rLabels.includes(label);
 
     const hay = (r.french + " " + r.english + " " + r.sentence + " " + r.tags + " " + r.labels).toLowerCase();
     const okQ = !q || hay.includes(q);
 
-    return okDeck && okLesson && okLabel && okQ;                  // NEW
+    return okDeck && okLesson && okLabel && okQ;
   });
 
   loadProgress();
@@ -184,9 +183,9 @@ function updateForvoLinkVisibility() {
   if (!c) { link.style.display = "none"; return; }
 
   const isFlipped = cardEl.classList.contains("flipped");
-  // French visible on the front face when:
+  // French visible when:
   // - FR->EN and not flipped
-  // - EN->FR and flipped (your French content is on "back" in EN->FR)
+  // - EN->FR and flipped
   const frenchVisible =
     (state.direction === "fr-en" && !isFlipped) ||
     (state.direction === "en-fr" &&  isFlipped);
@@ -203,7 +202,50 @@ function updateForvoLinkVisibility() {
 }
 
 /* =========================================================
-   Render
+   Populate filters (deck, lesson, label)
+   ========================================================= */
+function getAllLabels(rows){
+  const set = new Set();
+  rows.forEach(r=>{
+    (r.labels || "")
+      .split(/[;,|]/)
+      .map(s => s.trim())
+      .filter(Boolean)
+      .forEach(l => set.add(l));
+  });
+  return Array.from(set).sort((a,b)=>a.localeCompare(b));
+}
+
+function populate() {
+  const decks = [...new Set(state.rows.map((r) => r.deck).filter(Boolean))].sort();
+  const lessons = [...new Set(state.rows.map((r) => r.lesson).filter(Boolean))].sort((a, b) => {
+    const na = +a, nb = +b;
+    if (!isNaN(na) && !isNaN(nb)) return na - nb;
+    return String(a).localeCompare(String(b));
+  });
+  const labels = getAllLabels(state.rows);
+
+  if (d("deckFilter")) {
+    d("deckFilter").innerHTML =
+      '<option value="">All decks</option>' +
+      decks.map((x) => `<option>${x}</option>`).join("");
+  }
+
+  if (d("lessonFilter")) {
+    d("lessonFilter").innerHTML =
+      '<option value="">All</option>' +
+      lessons.map((x) => `<option>${x}</option>`).join("");
+  }
+
+  if (d("labelFilter")) {
+    d("labelFilter").innerHTML =
+      '<option value="">All labels</option>' +
+      labels.map((x) => `<option>${x}</option>`).join("");
+  }
+}
+
+/* =========================================================
+   Render card
    ========================================================= */
 function render() {
   const card = d("card");
@@ -231,9 +273,7 @@ function render() {
   // Which side shows first?
   const frenchFront = state.direction === "fr-en";
 
-  // Reset reveal each render unless we’re re-rendering same card & keeping it
-  // (we reset elsewhere on flip/next; here we ensure DOM matches state.revealed)
-  // Fill content:
+  // Fill content
   if (frenchFront) {
     // FRONT = French
     d("article").textContent = c.article || "";
@@ -241,7 +281,7 @@ function render() {
     d("pron").textContent = c.pron || "";
     d("answer").textContent = c.english || "";
 
-    // French sentence is hidden on FRONT until user clicks to reveal
+    // French sentence hidden on FRONT until user clicks to reveal
     d("sentenceFront").textContent = state.revealed ? (c.sentence || "") : "";
     d("sentenceBack").textContent = ""; // empty on back in FR->EN
   } else {
@@ -264,9 +304,6 @@ function render() {
     .map((t) => `<span class="tag">${t}</span>`)
     .join(" ");
 
-  // Make sure the card face matches direction (front shown by default)
-  // We don't auto-flip here; flip is user-controlled.
-
   // Update Forvo icon/link presence
   updateForvoLinkVisibility();
 }
@@ -275,56 +312,9 @@ const next = (step) => {
   if (!state.queue.length) return;
   state.idx = (state.idx + (step || 1) + state.queue.length) % state.queue.length;
   state.revealed = false; // new card → sentence hidden again if French is front
-  // ensure card is not stuck flipped when we advance
   d("card").classList.remove("flipped");
   render();
 };
-
-/* =========================================================
-   Helpers to extract unique labels for the filter  (NEW)
-   ========================================================= */
-function getAllLabels(rows){
-  const set = new Set();
-  rows.forEach(r=>{
-    (r.labels || "")
-      .split(/[;,|]/)                // support ; , |
-      .map(s => s.trim())
-      .filter(Boolean)
-      .forEach(l => set.add(l));
-  });
-  return Array.from(set).sort((a,b)=>a.localeCompare(b));
-}
-
-/* =========================================================
-   Populate filters (deck, lesson, label)
-   ========================================================= */
-function populate() {
-  const decks = [...new Set(state.rows.map((r) => r.deck).filter(Boolean))].sort();
-  const lessons = [...new Set(state.rows.map((r) => r.lesson).filter(Boolean))].sort((a, b) => {
-    const na = +a, nb = +b;
-    if (!isNaN(na) && !isNaN(nb)) return na - nb;
-    return String(a).localeCompare(String(b));
-  });
-  const labels = getAllLabels(state.rows); // NEW
-
-  if (d("deckFilter")) {
-    d("deckFilter").innerHTML =
-      '<option value="">All decks</option>' +
-      decks.map((x) => `<option>${x}</option>`).join("");
-  }
-
-  if (d("lessonFilter")) {
-    d("lessonFilter").innerHTML =
-      '<option value="">All</option>' +
-      lessons.map((x) => `<option>${x}</option>`).join("");
-  }
-
-  if (d("labelFilter")) { // NEW
-    d("labelFilter").innerHTML =
-      '<option value="">All labels</option>' +
-      labels.map((x) => `<option>${x}</option>`).join("");
-  }
-}
 
 /* =========================================================
    Load CSV
@@ -355,14 +345,13 @@ d("resetBtn")?.addEventListener("click", () => {
 });
 
 // Filters
-["deckFilter", "lessonFilter", "labelFilter", "studyMode", "shuffle"].forEach((id) =>  // NEW: labelFilter
+["deckFilter", "lessonFilter", "labelFilter", "studyMode", "shuffle"].forEach((id) =>
   d(id)?.addEventListener("change", filter)
 );
 d("search")?.addEventListener("input", filter);
 
 // Card click: if French is visible on the current face, toggle sentence reveal
 d("card")?.addEventListener("click", (ev) => {
-  // Ignore clicks on the Forvo icon so it doesn't toggle reveal
   const inForvo = ev.target.closest?.("#forvoLink");
   if (inForvo) return;
 
@@ -374,7 +363,6 @@ d("card")?.addEventListener("click", (ev) => {
 
   if (frenchVisible) {
     state.revealed = !state.revealed;
-    // Only affects the "sentenceFront" when FR is on front; re-render to apply
     render();
   }
 });
@@ -383,7 +371,6 @@ d("card")?.addEventListener("click", (ev) => {
 d("flipBtn")?.addEventListener("click", () => {
   const card = d("card");
   card.classList.toggle("flipped");
-  // When you flip away from French front, hide any reveal state
   const isFlipped = card.classList.contains("flipped");
   if (state.direction === "fr-en" && isFlipped) state.revealed = false;
   if (state.direction === "en-fr" && !isFlipped) state.revealed = false;
@@ -417,11 +404,18 @@ d("dirSeg")?.addEventListener("click", (e) => {
   [...document.querySelectorAll("#dirSeg button")].forEach((x) => x.classList.remove("active"));
   b.classList.add("active");
   state.direction = b.dataset.dir;
-  // Changing direction means front/back swap → reset reveal and ensure not flipped
   state.revealed = false;
   d("card").classList.remove("flipped");
   render();
   updateForvoLinkVisibility();
+});
+
+// Hamburger menu toggle (mobile)
+d("hamburger")?.addEventListener("click", () => {
+  document.body.classList.toggle("menu-open");
+});
+document.querySelector(".scrim")?.addEventListener("click", () => {
+  document.body.classList.remove("menu-open");
 });
 
 /* =========================================================
