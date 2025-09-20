@@ -81,6 +81,55 @@ function grade(which){
 }
 
 // ---------- helpers ----------
+// Build a Forvo-friendly slug from "article + french" (keeps article)
+function forvoSlug(display){
+  if(!display) return "";
+  let t = display.trim();
+  // remove gender notes like (m), (f), (m pl), (f pl)
+  t = t.replace(/\((?:m|f)(?:\s*pl)?\)/gi, "").trim();
+  // normalise apostrophes and spaces
+  t = t.replace(/’/g, "'").replace(/\s+/g, " ");
+  // Forvo uses underscores; also swap apostrophes to underscore for stable paths
+  t = t.replace(/'/g, "_").replace(/\s/g, "_");
+  return t.toLowerCase();
+}
+
+function buildForvoUrlFromCard(card){
+  const display = ((card.article ? card.article + " " : "") + (card.french || "")).trim();
+  if(!display) return null;
+  const slug = forvoSlug(display);
+  return slug ? `https://forvo.com/word/${slug}/#fr` : null;
+}
+
+// Show/hide + set the Forvo link based on what's visible right now
+function updateForvoLinkVisibility(){
+  const link = document.getElementById('forvoLink');
+  const cardEl = document.getElementById('card');
+  if(!link || !cardEl) return;
+
+  const c = state.queue[state.idx];
+  if(!c){ link.style.display = 'none'; return; }
+
+  const isFlipped = cardEl.classList.contains('flipped');
+  // Front shows French when:
+  // - direction FR->EN and not flipped
+  // - direction EN->FR and flipped (your app shows FR on the back in EN->FR mode)
+  const frenchVisibleOnFront =
+    (state.direction === 'fr-en' && !isFlipped) ||
+    (state.direction === 'en-fr' &&  isFlipped);
+
+  if(frenchVisibleOnFront){
+    const url = buildForvoUrlFromCard(c);
+    if(url){
+      link.href = url;
+      link.style.display = 'inline-flex';
+      return;
+    }
+  }
+  // Hide if English is showing or we have no URL
+  link.style.display = 'none';
+}
+
 function frenchVisible() {
   const flipped = d('card').classList.contains('flipped');
   return (state.direction === 'fr-en' && !flipped) ||
