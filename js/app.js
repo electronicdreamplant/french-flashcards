@@ -106,16 +106,27 @@ function grade(g) {
    Filtering, shuffle, stats
    ========================================================= */
 function filter() {
-  const deck = (d("deckFilter")?.value || "").toLowerCase();
+  const deck   = (d("deckFilter")?.value || "").toLowerCase();
   const lesson = (d("lessonFilter")?.value || "").toLowerCase();
-  const q = (d("search")?.value || "").toLowerCase();
+  const label  = (d("labelFilter")?.value || "").toLowerCase();   // NEW
+  const q      = (d("search")?.value || "").toLowerCase();
 
   let rows = state.rows.filter(r => {
-    const okDeck = !deck || r.deck.toLowerCase() === deck;
+    const okDeck   = !deck   || r.deck.toLowerCase()   === deck;
     const okLesson = !lesson || r.lesson.toLowerCase() === lesson;
+
+    // label match: tokenise r.labels by ; , | and trim   // NEW
+    const rLabels = (r.labels || "")
+      .toLowerCase()
+      .split(/[;,|]/)
+      .map(s => s.trim())
+      .filter(Boolean);
+    const okLabel = !label || rLabels.includes(label);           // NEW
+
     const hay = (r.french + " " + r.english + " " + r.sentence + " " + r.tags + " " + r.labels).toLowerCase();
     const okQ = !q || hay.includes(q);
-    return okDeck && okLesson && okQ;
+
+    return okDeck && okLesson && okLabel && okQ;                  // NEW
   });
 
   loadProgress();
@@ -270,7 +281,22 @@ const next = (step) => {
 };
 
 /* =========================================================
-   Populate filters (deck, lesson)
+   Helpers to extract unique labels for the filter  (NEW)
+   ========================================================= */
+function getAllLabels(rows){
+  const set = new Set();
+  rows.forEach(r=>{
+    (r.labels || "")
+      .split(/[;,|]/)                // support ; , |
+      .map(s => s.trim())
+      .filter(Boolean)
+      .forEach(l => set.add(l));
+  });
+  return Array.from(set).sort((a,b)=>a.localeCompare(b));
+}
+
+/* =========================================================
+   Populate filters (deck, lesson, label)
    ========================================================= */
 function populate() {
   const decks = [...new Set(state.rows.map((r) => r.deck).filter(Boolean))].sort();
@@ -279,14 +305,25 @@ function populate() {
     if (!isNaN(na) && !isNaN(nb)) return na - nb;
     return String(a).localeCompare(String(b));
   });
+  const labels = getAllLabels(state.rows); // NEW
 
-  d("deckFilter").innerHTML =
-    '<option value="">All decks</option>' +
-    decks.map((x) => `<option>${x}</option>`).join("");
+  if (d("deckFilter")) {
+    d("deckFilter").innerHTML =
+      '<option value="">All decks</option>' +
+      decks.map((x) => `<option>${x}</option>`).join("");
+  }
 
-  d("lessonFilter").innerHTML =
-    '<option value="">All</option>' +
-    lessons.map((x) => `<option>${x}</option>`).join("");
+  if (d("lessonFilter")) {
+    d("lessonFilter").innerHTML =
+      '<option value="">All</option>' +
+      lessons.map((x) => `<option>${x}</option>`).join("");
+  }
+
+  if (d("labelFilter")) { // NEW
+    d("labelFilter").innerHTML =
+      '<option value="">All labels</option>' +
+      labels.map((x) => `<option>${x}</option>`).join("");
+  }
 }
 
 /* =========================================================
@@ -318,7 +355,7 @@ d("resetBtn")?.addEventListener("click", () => {
 });
 
 // Filters
-["deckFilter", "lessonFilter", "studyMode", "shuffle"].forEach((id) =>
+["deckFilter", "lessonFilter", "labelFilter", "studyMode", "shuffle"].forEach((id) =>  // NEW: labelFilter
   d(id)?.addEventListener("change", filter)
 );
 d("search")?.addEventListener("input", filter);
