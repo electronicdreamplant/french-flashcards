@@ -358,6 +358,10 @@ d("againBtn")?.addEventListener("click", () => grade("again"));
 d("goodBtn")?.addEventListener("click", () => grade("good"));
 d("easyBtn")?.addEventListener("click", () => grade("easy"));
 
+// Prev / Next buttons
+d('prevBtn')?.addEventListener('click', () => next(-1));
+d('nextBtn')?.addEventListener('click', () => next(1));
+
 // Keyboard shortcuts
 window.addEventListener("keydown", (e) => {
   if (e.target && ["INPUT", "SELECT", "TEXTAREA"].includes(e.target.tagName)) return;
