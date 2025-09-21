@@ -320,18 +320,19 @@ const next = (step) => {
 };
 
 /* =========================================================
-   Load CSV
+   Load CSV (NO custom headers → no CORS preflight)
    ========================================================= */
 async function loadCsv(url) {
   try {
-    const res = await fetch(url, { headers: { "Cache-Control": "no-cache" } });
+    const bust = (url.includes("?") ? "&" : "?") + "t=" + Date.now();
+    const res = await fetch(url + bust);   // <-- no headers here
     if (!res.ok) throw new Error("HTTP " + res.status);
     const txt = await res.text();
     state.rows = mapHeaders(parseCSV(txt));
     populate();
     filter();
   } catch (e) {
-    alert("Load failed: " + e.message);
+    alert("Load failed: " + (e && e.message ? e.message : "Unknown error"));
   }
 }
 
