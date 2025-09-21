@@ -139,6 +139,17 @@
     </main>
   </div>
 
+  <!-- Refresh dock (bottom-left) -->
+<div class="refreshDock" aria-live="polite">
+  <button id="refreshBtn" class="refreshFab" aria-label="Refresh data">
+    <!-- inline SVG so it looks crisp everywhere -->
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+      <path d="M17.65 6.35A7.95 7.95 0 0 0 12 4a8 8 0 1 0 7.75 10h-2.1a6 6 0 1 1-1.9-5.65l-2.3 2.3H20V4l-2.35 2.35z" fill="currentColor"/>
+    </svg>
+  </button>
+  <span id="lastUpdated" class="refreshText" title="Last data refresh"></span>
+</div>
+
   <script src="js/app.js"></script>
 </body>
 </html>
