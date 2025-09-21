@@ -4,7 +4,7 @@
 
 /* ---------- configuration ---------- */
 const SHEET_ENDPOINT =
-  "https://script.google.com/macros/s/AKfycbznajBvVWTmNVbzfek0QA9cWBPlNTeYX_GZFR1qQncVPFbp4UJwAW1iWjQslSnT4CDBIA/exec?sheet=Form%20responses";
+  "https://script.google.com/macros/s/AKfycbyJm6QT1xRRyOm5eAERxfQ4hcHxF9whM51qaTK76-l9Eb1yR7KY4-y75p_1ESZ0EKxvFw/exec?sheet=Form%20responses";
 
 const DEFAULT_SRC =
   "https://api.allorigins.win/raw?url=" + encodeURIComponent(SHEET_ENDPOINT);
