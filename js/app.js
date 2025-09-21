@@ -4,7 +4,7 @@
 
 /* ---------- configuration ---------- */
 const DEFAULT_SRC =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTm0yTZkHyweym1ITZbZGg2AJJByj35kMoCXggEwDuRwFwtLNqyhuEaZsNBS_fzbDseq8f8lrnYI3MU/pub?gid=1046747301&single=true&output=csv";
+  "https://script.google.com/macros/s/AKfycbznajBvVWTmNVbzfek0QA9cWBPlNTeYX_GZFR1qQncVPFbp4UJwAW1iWjQslSnT4CDBIA/exec?sheet=Form%20responses";
 
 /* ---------- dom helpers & app state ---------- */
 const d = (id) => document.getElementById(id);
