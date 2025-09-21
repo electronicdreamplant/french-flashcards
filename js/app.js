@@ -3,11 +3,8 @@
    ========================================================= */
 
 /* ---------- configuration ---------- */
-const SHEET_ENDPOINT =
-const SHEET_ENDPOINT =
-  "https://french-vocab-proxy.neil-186.workers.dev/?sheet=Form%20responses";
-
-const DEFAULT_SRC = SHEET_ENDPOINT; // (no AllOrigins needed anymore)
+const SHEET_ENDPOINT = "https://french-vocab-proxy.neil-186.workers.dev";
+const DEFAULT_SRC = SHEET_ENDPOINT; // we’ll add the ?sheet param when fetching
 
 /* ---------- dom helpers & app state ---------- */
 const d = (id) => document.getElementById(id);
