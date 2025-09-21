@@ -2,7 +2,7 @@
 
 A lightweight, mobile-friendly flashcard app for practising French vocabulary. It pulls your cards from a Google Sheet (fed by a Google Form), schedules reviews with a simple spaced-repetition loop, and runs as a static site (e.g. GitHub Pages). No server required.
 
-![french flashcards app screengrab](app_image.png)
+![french flashcards app screengrab](flashcards_app.png)
 
 
 ## Objectives
