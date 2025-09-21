@@ -2,7 +2,6 @@
 
 A lightweight, mobile-friendly flashcard app for practising French vocabulary. It pulls your cards from a Google Sheet (fed by a Google Form), schedules reviews with a simple spaced-repetition loop, and runs as a static site (e.g. GitHub Pages). No server required.
 
-⸻
 
 ## Objectives
 	•	Study vocab “due today” using a light spaced-repetition cycle.
@@ -11,7 +10,6 @@ A lightweight, mobile-friendly flashcard app for practising French vocabulary. I
 	•	Keep all progress stored locally so multiple learners don’t interfere.
 	•	Run anywhere with nothing more than a browser.
 
-⸻
 
 ## How to Use the App
 
@@ -49,7 +47,6 @@ A lightweight, mobile-friendly flashcard app for practising French vocabulary. I
 	•	2 or G – Good
 	•	3 or E – Easy
 
-⸻
 
 ## Data Model (Google Sheet)
 
@@ -67,7 +64,6 @@ The app expects a header row with these columns (case insensitive):
 
 Other columns such as Timestamp (from the Form) are ignored.
 
-⸻
 
 ## Scheduling
 
