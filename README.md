@@ -61,7 +61,6 @@ The app expects a header row with these columns (case insensitive):
 * labels – optional label (supports multiple with commas/semicolons/pipes)
 * tags – optional keywords
 * id – optional unique ID (if not present, app generates)
-* pron – optional (reserved for future use)
 
 Other columns such as Timestamp (from the Form) are ignored.
 
@@ -86,17 +85,44 @@ Progress is stored in localStorage in the browser, keyed by the data source URL.
 ## Architecture
 
 ### Data flow
-	1.	Add vocab with the Google Form.
-	2.	Responses land in the Google Sheet (Form responses tab).
-	3.	Google Apps Script publishes the sheet as a CSV endpoint.
-	4.	The app fetches that CSV (via AllOrigins to handle CORS).
-	5.	Cards are rendered, filtered, and scheduled locally.
+1. **Add vocab** via the Google Form.
+2. Responses land in the Google Sheet (the **Form responses** tab).
+3. A tiny **Google Apps Script** publishes the sheet as a CSV/JSON **web app endpoint**.
+4. The app fetches that endpoint **via AllOrigins** (a public CORS passthrough).
+5. Cards are rendered in the browser; filtering and spaced-repetition scheduling run **locally** and progress is stored in **localStorage**.
+
+> Why AllOrigins? Apps Script web apps don’t reliably answer CORS preflights. Routing through AllOrigins returns permissive CORS headers so a simple `fetch()` works from GitHub Pages.  
+> Alternatives: use Google’s **gviz** CSV endpoint (if the sheet can be “Anyone with link – Viewer”), or your own tiny CORS proxy (e.g., Cloudflare Worker).
 
 ### Files
-* index.html – layout and structure
-* css/style.css – styles, including mobile adjustments
-* js/app.js – logic for fetching, rendering, filtering, scheduling
+#### index.html 
+Includes the sidebar controls (Direction, Study, Deck, Lesson, Label, Search, Shuffle), the card area (front/back, sentence, tags, label), action buttons (Again/Good/Easy/Flip, Prev/Next), and the bottom-left **Refresh** control with “Updated …” timestamp.
 
+#### css/style.css  
+Layout, card styling, mobile hamburger menu, large tap targets, and the fixed refresh dock.
+
+#### js/app.js
+* **Data loading:** builds `DEFAULT_SRC` from your Apps Script URL and wraps it with AllOrigins; adds a `?t=Date.now()` cache-buster on each load.  
+* **CSV parsing & mapping:** reads the published CSV and maps header names (case-insensitive) to fields: `deck, lesson, article, french, english, sentence, labels, tags, id` (and `pron` if you add it).  
+* **Filters & search:** Deck/Lesson/Label filters; free-text search across French/English/Sentence/Labels/Tags.  
+* **Scheduler:** light SM-5 style (boxes 1–5 with 0/1/2/4/7-day intervals). Progress is saved in `localStorage` **per data source URL**.  
+* **Rendering:** FR→EN shows French on the front (sentence hidden until tapped), EN→FR shows English on the front and the French sentence on the back.  
+* **Forvo link:** when French is visible, a top-right link opens the Forvo page for `article + word`.  
+* **Refresh dock:** reloads data on demand and updates the “Updated …” timestamp.
+
+#### js/utils.js (optional but recommended)  
+A small helper library to keep `app.js` lean. Typical utilities:
+* `parseCSV(text)` — robust CSV parser (quotes, commas, CRLF).  
+* `splitLabels(str)` — split on comma/semicolon/pipe and trim.  
+* `slugifyForvo(display)` — build a Forvo-friendly slug from `article + french` (strips `(m)`, `(f)`, `(… pl)`, normalises spaces/apostrophes).  
+* `cacheBust(url)` — append `?t=Date.now()` or `&t=…`.  
+* `formatUpdated(ts)` — human-friendly “Updated 21 Sep, 14:32”.
+
+If you include it, load **before** `app.js`:
+```html
+  <script src="js/utils.js"></script>
+  <script src="js/app.js"></script>
+```
 
 ## Setup & Configuration
 * Google Form – inputs vocab directly to the sheet.
