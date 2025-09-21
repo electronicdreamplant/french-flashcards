@@ -3,8 +3,11 @@
    ========================================================= */
 
 /* ---------- configuration ---------- */
-const DEFAULT_SRC =
+const SHEET_ENDPOINT =
   "https://script.google.com/macros/s/AKfycbznajBvVWTmNVbzfek0QA9cWBPlNTeYX_GZFR1qQncVPFbp4UJwAW1iWjQslSnT4CDBIA/exec?sheet=Form%20responses";
+
+const DEFAULT_SRC =
+  "https://api.allorigins.win/raw?url=" + encodeURIComponent(SHEET_ENDPOINT);
 
 /* ---------- dom helpers & app state ---------- */
 const d = (id) => document.getElementById(id);
