@@ -23,6 +23,30 @@ const state = {
   revealed: false,    // controls French sentence reveal on the French side
 };
 
+/* ---------- last-updated helpers (for refresh dock) ---------- */
+const lastKey = () => "flashcards:lastUpdated::" + state.src;
+
+function setLastUpdatedNow(){
+  try{
+    const ts = new Date().toISOString();
+    localStorage.setItem(lastKey(), ts);
+  }catch(e){}
+  updateLastUpdated();
+}
+
+function updateLastUpdated(){
+  const el = d("lastUpdated");
+  if (!el) return;
+  const ts = localStorage.getItem(lastKey());
+  if (!ts) { el.textContent = ""; return; }
+  const dt = new Date(ts);
+  // short, locale-friendly stamp (e.g., "Updated 21 Sep, 14:32")
+  const fmt = new Intl.DateTimeFormat(undefined,{
+    day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit"
+  }).format(dt);
+  el.textContent = `Updated ${fmt}`;
+}
+
 /* =========================================================
    CSV parsing & mapping
    ========================================================= */
@@ -331,6 +355,7 @@ async function loadCsv(url) {
     state.rows = mapHeaders(parseCSV(txt));
     populate();
     filter();
+    setLastUpdatedNow(); // <-- stamp the time after a successful load
   } catch (e) {
     alert("Load failed: " + (e && e.message ? e.message : "Unknown error"));
   }
@@ -390,6 +415,9 @@ d("easyBtn")?.addEventListener("click", () => grade("easy"));
 d('prevBtn')?.addEventListener('click', () => next(-1));
 d('nextBtn')?.addEventListener('click', () => next(1));
 
+// Refresh button (bottom-left dock)
+d("refreshBtn")?.addEventListener("click", () => loadCsv(state.src));
+
 // Keyboard shortcuts
 window.addEventListener("keydown", (e) => {
   if (e.target && ["INPUT", "SELECT", "TEXTAREA"].includes(e.target.tagName)) return;
@@ -426,5 +454,6 @@ document.querySelector(".scrim")?.addEventListener("click", () => {
    Startup
    ========================================================= */
 document.addEventListener("DOMContentLoaded", () => {
-  loadCsv(state.src);
+  updateLastUpdated();   // show previous timestamp (if any) straight away
+  loadCsv(state.src);    // then fetch fresh data
 });
