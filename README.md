@@ -16,13 +16,13 @@ A lightweight, mobile-friendly flashcard app for practising French vocabulary. I
 ## How to Use the App
 
 ### Controls
-Direction – Choose which side of the card appears first (FR→EN or EN→FR).	•	Study – Show only cards “Due today” or all matching filters.
-	•	Deck – Filter by deck/category (e.g., Food, Family, Classroom).
-	•	Lesson – Narrow by lesson number or name.
-	•	Label – Filter by special labels (e.g., cognate).
-	•	Search – Free text search across French, English, sentences, labels, and tags.
-	•	Shuffle – Shuffle the order of the current set.
-	•	Reset progress – Clear your learning history for this data source.
+* **Direction** – Choose which side of the card appears first (FR→EN or EN→FR).	•	Study – Show only cards “Due today” or all matching filters.
+* **Deck** – Filter by deck/category (e.g., Food, Family, Classroom).
+* **Lesson** – Narrow by lesson number or name.
+* **Label** – Filter by special labels (e.g., cognate).
+* **Search** – Free text search across French, English, sentences, labels, and tags.
+* **Shuffle** – Shuffle the order of the current set.
+* **Reset progress** – Clear your learning history for this data source.
 
 ### Cards
 	•	Front/Back – Shows French or English depending on the direction.
